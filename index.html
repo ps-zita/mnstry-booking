@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Booking Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+    .header {
+      font-size: 4em;
+      font-weight: bold;
+      margin: 40px 0 60px;
+    }
+    .top-image {
+      display: block;
+      margin: 40px auto 20px;
+      width: 50px;
+      height: auto;
+      filter: brightness(0) invert(1);
+    }
+    .question {
+      font-size: 1.2em;
+      margin: 30px 0 10px;
+    }
+    .contact {
+      font-size: 1em;
+      margin-bottom: 80px;
+    }
+    .contact a.specialist,
+    .contact a.survey {
+      color: white;
+      text-decoration: underline;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .toggle-buttons {
+      display: flex;
+      margin: 80px auto 10px;
+      width: 80%;
+      max-width: 400px;
+      border: 1px solid #555;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .toggle-buttons button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: none;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .toggle-buttons button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+    .toggle-buttons button.selected {
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
+    }
+    #washDescription {
+      margin: 15px 0 20px;
+      font-size: 0.95em;
+      color: #ccc;
+    }
+    .car-size-text {
+      font-size: 0.9em;
+      margin-top: 110px;
+      margin-bottom: 20px;
+    }
+    .cards {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .card {
+      background: #000;
+      border: 1px solid white;
+      border-radius: 10px;
+      width: calc(35% - 10px);
+      padding: 10px;
+      text-align: center;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+    }
+    .card.selected {
+      box-shadow: inset 0 0 10px white;
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+      filter: brightness(0) invert(1);
+    }
+    .card[data-value="Small Car/Sedan"] img {
+      margin-top: 10px;
+    }
+    .card span {
+      display: block;
+      font-size: 1em;
+      margin-top: auto;
+    }
+    .continue-button {
+      background-color: #6a0dad;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      margin-top: 20px;
+      transition: transform 0.3s ease;
+      box-shadow: inset 0 0 10px 3px rgba(255,105,180,0.5),
+                  inset 0 0 10px 3px rgba(255,165,0,0.5);
+    }
+    .continue-button::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at top left, rgba(255,105,180,0.8), transparent 70%),
+                  radial-gradient(circle at bottom right, rgba(255,165,0,0.8), transparent 70%);
+      z-index: 1;
+    }
+    .continue-button::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: inherit;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2;
+    }
+    .continue-button span {
+      position: relative;
+      z-index: 3;
+    }
+    .continue-button:hover {
+      transform: scale(1.1);
+    }
+    @media (max-width: 600px) {
+      .header {
+        font-size: 2.5em;
+      }
+      .toggle-buttons {
+        width: 90%;
+      }
+      .cards {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 10px;
+        margin: 0 20px;
+        justify-content: flex-start;
+      }
+      .card {
+        flex: 0 0 calc(50% - 10px);
+        scroll-snap-align: center;
+        width: calc(50% - 10px);
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Make a booking</div>
+    <img class="top-image" src="https://images.squarespace-cdn.com/content/v1/679bba1549c7035ec42d299b/f3d8eedb-6ca1-4505-924b-bc11368676b0/PS_Icon_1.png" alt="Top Icon">
+    <div class="question">Have questions about washing your car?</div>
+    <div class="contact">
+      <a class="specialist" href="#">Chat with a specialist</a>
+      <span class="or">or</span>
+      <a class="survey" href="#">complete a short survey</a>
+    </div>
+    <div class="toggle-buttons">
+      <button class="selected" id="chooseWash">choose your wash</button>
+      <button id="buildWash">build your wash</button>
+    </div>
+    <div id="washDescription">choose a predetermined package of thing we do to your car</div>
+    <div class="car-size-text">choose your car size</div>
+    <div class="cards" id="cardSlider">
+      <div class="card" data-value="SUV/4WD">
+        <img src="https://cdn.creazilla.com/silhouettes/972/suv-silhouette-000000-xl.png" alt="SUV/4WD">
+        <span>SUV/4WD</span>
+      </div>
+      <div class="card" data-value="Small Car/Sedan">
+        <img src="https://1001freedownloads.s3.amazonaws.com/vector/thumb/135024/zager_Sedan_Car.png" alt="Small Car/Sedan">
+        <span>Small Car/Sedan</span>
+      </div>
+    </div>
+    <button class="continue-button" id="continueButton">
+      <span>Continue</span>
+    </button>
+  </div>
+  <script>
+    const chooseWash = document.getElementById("chooseWash");
+    const buildWash = document.getElementById("buildWash");
+    const washDescription = document.getElementById("washDescription");
+    chooseWash.addEventListener("click", () => {
+      chooseWash.classList.add("selected");
+      buildWash.classList.remove("selected");
+      washDescription.textContent = "choose a predetermined package of thing we do to your car";
+    });
+    buildWash.addEventListener("click", () => {
+      buildWash.classList.add("selected");
+      chooseWash.classList.remove("selected");
+      washDescription.textContent = "choose each individual thing you want done to your car";
+    });
+    const cards = document.querySelectorAll(".card");
+    cards.forEach(card => {
+      card.addEventListener("click", () => {
+        cards.forEach(c => c.classList.remove("selected"));
+        card.classList.add("selected");
+      });
+    });
+    const continueButton = document.getElementById("continueButton");
+    continueButton.addEventListener("click", () => {
+      const selectedCard = document.querySelector(".card.selected");
+      if (selectedCard) {
+        alert("You selected: " + selectedCard.getAttribute("data-value"));
+      } else {
+        alert("Please select a car option to continue.");
+      }
+    });
+  </script>
+</body>
+</html>
