@@ -1,257 +1,626 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Booking Page</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
-      position: relative;
-    }
-    .header {
-      font-size: 4em;
-      font-weight: bold;
-      margin: 40px 0 60px;
-    }
-    .top-image {
-      display: block;
-      margin: 40px auto 20px;
-      width: 50px;
-      height: auto;
-      filter: brightness(0) invert(1);
-    }
-    .question {
-      font-size: 1.2em;
-      margin: 30px 0 10px;
-    }
-    .contact {
-      font-size: 1em;
-      margin-bottom: 80px;
-    }
-    .contact a.specialist,
-    .contact a.survey {
-      color: white;
-      text-decoration: underline;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .toggle-buttons {
-      display: flex;
-      margin: 80px auto 10px;
-      width: 80%;
-      max-width: 400px;
-      border: 1px solid #555;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    .toggle-buttons button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      background: none;
-      color: white;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .toggle-buttons button:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: scale(1.05);
-    }
-    .toggle-buttons button.selected {
-      box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
-    }
-    #washDescription {
-      margin: 15px 0 20px;
-      font-size: 0.95em;
-      color: #ccc;
-    }
-    .car-size-text {
-      font-size: 0.9em;
-      margin-top: 110px;
-      margin-bottom: 20px;
-    }
-    .cards {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .card {
-      background: #000;
-      border: 1px solid white;
-      border-radius: 10px;
-      width: calc(35% - 10px);
-      padding: 10px;
-      text-align: center;
-      box-sizing: border-box;
-      margin-bottom: 20px;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      display: flex;
-      flex-direction: column;
-    }
-    .card:hover {
-      transform: translateY(-3px);
-    }
-    .card.selected {
-      box-shadow: inset 0 0 10px white;
-    }
-    .card img {
-      width: 100%;
-      height: auto;
-      border-radius: 5px;
-      filter: brightness(0) invert(1);
-    }
-    .card[data-value="Small Car/Sedan"] img {
-      margin-top: 10px;
-    }
-    .card span {
-      display: block;
-      font-size: 1em;
-      margin-top: auto;
-    }
-    .continue-button {
-      background-color: #6a0dad;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      padding: 12px 20px;
-      font-size: 1em;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      margin-top: 20px;
-      transition: transform 0.3s ease;
-      box-shadow: inset 0 0 10px 3px rgba(255,105,180,0.5),
-                  inset 0 0 10px 3px rgba(255,165,0,0.5);
-    }
-    .continue-button::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: inherit;
-      background: radial-gradient(circle at top left, rgba(255,105,180,0.8), transparent 70%),
-                  radial-gradient(circle at bottom right, rgba(255,165,0,0.8), transparent 70%);
-      z-index: 1;
-    }
-    .continue-button::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: inherit;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 2;
-    }
-    .continue-button span {
-      position: relative;
-      z-index: 3;
-    }
-    .continue-button:hover {
-      transform: scale(1.1);
-    }
-    @media (max-width: 600px) {
+  <head>
+    <meta charset="UTF-8" />
+    <title>Booking Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      /* Global Styles */
+      body {
+        background-color: black;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+          Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+      .hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
       .header {
-        font-size: 2.5em;
+        font-size: 4em;
+        font-weight: bold;
+        margin: 40px 0 60px;
       }
+      .top-image {
+        display: block;
+        margin: 40px auto 20px;
+        width: 50px;
+        height: auto;
+        filter: brightness(0) invert(1);
+      }
+      .question {
+        font-size: 1.2em;
+        margin: 30px 0 10px;
+      }
+      .contact {
+        font-size: 1em;
+        margin-bottom: 80px;
+      }
+      .contact a.specialist,
+      .contact a.survey {
+        color: white;
+        text-decoration: underline;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      /* First Page Toggle Buttons */
       .toggle-buttons {
-        width: 90%;
+        display: flex;
+        margin: 80px auto 10px;
+        width: 80%;
+        max-width: 400px;
+        border: 1px solid #555;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        z-index: 1;
       }
+      .toggle-buttons button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        background: none;
+        color: white;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.3s;
+      }
+      .toggle-buttons button:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.05);
+      }
+      .toggle-buttons button.selected {
+        box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
+      }
+      #washDescription {
+        margin: 15px 0 20px;
+        font-size: 0.95em;
+        color: #ccc;
+      }
+      .car-size-text {
+        font-size: 0.9em;
+        margin-top: 110px;
+        margin-bottom: 20px;
+      }
+      /* Cards container styling */
       .cards {
         display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
         gap: 10px;
-        margin: 0 20px;
-        justify-content: flex-start;
+        justify-content: center;
+        flex-wrap: wrap;
       }
       .card {
-        flex: 0 0 calc(50% - 10px);
-        scroll-snap-align: center;
-        width: calc(50% - 10px);
-        margin-bottom: 0;
+        background: #000;
+        border: 1px solid white;
+        border-radius: 10px;
+        width: calc(35% - 10px);
+        padding: 10px;
+        text-align: center;
+        box-sizing: border-box;
+        margin-bottom: 20px;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
       }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">Make a booking</div>
-    <img class="top-image" src="https://images.squarespace-cdn.com/content/v1/679bba1549c7035ec42d299b/f3d8eedb-6ca1-4505-924b-bc11368676b0/PS_Icon_1.png" alt="Top Icon">
-    <div class="question">Have questions about washing your car?</div>
-    <div class="contact">
-      <a class="specialist" href="#">Chat with a specialist</a>
-      <span class="or">or</span>
-      <a class="survey" href="#">complete a short survey</a>
-    </div>
-    <div class="toggle-buttons">
-      <button class="selected" id="chooseWash">choose your wash</button>
-      <button id="buildWash">build your wash</button>
-    </div>
-    <div id="washDescription">choose a predetermined package of thing we do to your car</div>
-    <div class="car-size-text">choose your car size</div>
-    <div class="cards" id="cardSlider">
-      <div class="card" data-value="SUV/4WD">
-        <img src="https://cdn.creazilla.com/silhouettes/972/suv-silhouette-000000-xl.png" alt="SUV/4WD">
-        <span>SUV/4WD</span>
+      .card:hover {
+        transform: translateY(-3px);
+      }
+      .card.selected {
+        box-shadow: inset 0 0 10px white;
+      }
+      .card img {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+        filter: brightness(0) invert(1);
+      }
+      .card[data-value="Small Car/Sedan"] img {
+        margin-top: 10px;
+      }
+      .card span {
+        display: block;
+        font-size: 1em;
+        margin-top: auto;
+      }
+      .continue-button {
+        background-color: #6a0dad;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 12px 20px;
+        font-size: 1em;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        margin-top: 20px;
+        transition: transform 0.3s ease;
+        box-shadow: inset 0 0 10px 3px rgba(255,105,180,0.5),
+                    inset 0 0 10px 3px rgba(255,165,0,0.5);
+        z-index: 1;
+      }
+      .continue-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .continue-button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: inherit;
+        background: radial-gradient(circle at top left, rgba(255,105,180,0.8), transparent 70%),
+                    radial-gradient(circle at bottom right, rgba(255,165,0,0.8), transparent 70%);
+        z-index: 1;
+      }
+      .continue-button::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: inherit;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2;
+      }
+      .continue-button span {
+        position: relative;
+        z-index: 3;
+      }
+      .continue-button:hover:not(:disabled) {
+        transform: scale(1.1);
+      }
+      /* Second Page - New Section */
+      .new-section {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-height: 100%;
+        background-color: black;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        padding-bottom: 100px; /* Ensure content isn't hidden behind fixed button */
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+        z-index: 10;
+      }
+      .new-section.visible {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .close-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+        z-index: 20;
+      }
+      /* New Section Toggle Buttons (Int / Ext) */
+      .new-toggle-buttons {
+        display: flex;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 500px;
+        border: 1px solid #555;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: top 0.5s ease, transform 0.5s ease;
+        z-index: 1000;
+      }
+      .new-toggle-buttons.animate {
+        top: 10vh;
+        transform: translate(-50%, 0);
+      }
+      .new-toggle-buttons button {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        background: none;
+        color: white;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.3s;
+      }
+      .new-toggle-buttons button:disabled {
+        color: grey;
+        cursor: not-allowed;
+      }
+      .new-toggle-buttons button:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.1);
+        transform: scale(1.05);
+      }
+      .new-toggle-buttons button.selected {
+        box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
+      }
+      .new-toggle-buttons .price {
+        display: block;
+        font-size: 0.8em;
+        color: grey;
+        margin-top: 5px;
+      }
+      /* Tier Container and Cards for Tier Selection */
+      #selectedCarContainer {
+        margin-top: calc(10vh + 80px);
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      #selectedCarContainer.visible {
+        opacity: 1;
+      }
+      .tier {
+        background: #111;
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 20px;
+        width: 300px;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+        position: relative;
+      }
+      .tier:hover {
+        box-shadow: 0 0 10px white;
+      }
+      .tier.selected {
+        box-shadow: 0 0 15px 5px #6a0dad;
+      }
+      .tier img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+      }
+      .tier-label {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+      }
+      .tier table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9em;
+      }
+      .tier table th,
+      .tier table td {
+        border: 1px solid #444;
+        padding: 5px;
+        text-align: left;
+      }
+      .tier table th {
+        background-color: #222;
+      }
+      /* Hide mobile description by default */
+      .tier-description {
+        display: none;
+        font-size: 1em;
+        margin: 10px 0;
+      }
+      /* Responsive Styles for Mobile Mode */
+      @media (max-width: 600px) {
+        .header {
+          font-size: 2.5em;
+        }
+        .toggle-buttons,
+        .new-toggle-buttons {
+          width: 90%;
+        }
+        /* Stack cards vertically with no horizontal scroll */
+        .cards {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin: 0 20px;
+          overflow-x: visible;
+        }
+        .card {
+          width: 100%;
+          margin-bottom: 10px;
+        }
+        /* Tier container becomes vertical */
+        #selectedCarContainer {
+          flex-direction: column;
+          overflow-x: visible;
+          gap: 20px;
+          padding: 0 10px;
+        }
+        /* In mobile, hide tables and show the description instead */
+        .tier table {
+          display: none;
+        }
+        .tier-description {
+          display: block;
+        }
+        /* New section container takes full viewport */
+        .new-section {
+          width: 100vw;
+          height: 100vh;
+        }
+      }
+      /* Move the continue button to the bottom of the page in new section */
+      #continueButtonNew {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 11;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- First Page -->
+    <div class="container" id="firstPage">
+      <div class="header">Make a booking</div>
+      <img
+        class="top-image"
+        src="https://images.squarespace-cdn.com/content/v1/679bba1549c7035ec42d299b/f3d8eedb-6ca1-4505-924b-bc11368676b0/PS_Icon_1.png"
+        alt="Top Icon"
+      />
+      <div class="question">Have questions about washing your car?</div>
+      <div class="contact">
+        <a class="specialist" href="#">Chat with a specialist</a>
+        <span class="or">or</span>
+        <a class="survey" href="#">complete a short survey</a>
       </div>
-      <div class="card" data-value="Small Car/Sedan">
-        <img src="https://1001freedownloads.s3.amazonaws.com/vector/thumb/135024/zager_Sedan_Car.png" alt="Small Car/Sedan">
-        <span>Small Car/Sedan</span>
+      <div class="toggle-buttons">
+        <button class="selected" id="chooseWash">choose your wash</button>
+        <button id="buildWash">build your wash</button>
       </div>
+      <div id="washDescription">
+        choose a predetermined package of thing we do to your car
+      </div>
+      <div class="car-size-text">choose your car size</div>
+      <div class="cards" id="cardSlider">
+        <div class="card" data-value="SUV/4WD">
+          <img
+            src="https://cdn.creazilla.com/silhouettes/972/suv-silhouette-000000-xl.png"
+            alt="SUV/4WD"
+          />
+          <span>SUV/4WD</span>
+        </div>
+        <div class="card" data-value="Small Car/Sedan">
+          <img
+            src="https://1001freedownloads.s3.amazonaws.com/vector/thumb/135024/zager_Sedan_Car.png"
+            alt="Small Car/Sedan"
+          />
+          <span>Small Car/Sedan</span>
+        </div>
+      </div>
+      <button class="continue-button" id="continueButton">
+        <span>Continue</span>
+      </button>
     </div>
-    <button class="continue-button" id="continueButton">
-      <span>Continue</span>
-    </button>
-  </div>
-  <script>
-    const chooseWash = document.getElementById("chooseWash");
-    const buildWash = document.getElementById("buildWash");
-    const washDescription = document.getElementById("washDescription");
-    chooseWash.addEventListener("click", () => {
-      chooseWash.classList.add("selected");
-      buildWash.classList.remove("selected");
-      washDescription.textContent = "choose a predetermined package of thing we do to your car";
-    });
-    buildWash.addEventListener("click", () => {
-      buildWash.classList.add("selected");
-      chooseWash.classList.remove("selected");
-      washDescription.textContent = "choose each individual thing you want done to your car";
-    });
-    const cards = document.querySelectorAll(".card");
-    cards.forEach(card => {
-      card.addEventListener("click", () => {
-        cards.forEach(c => c.classList.remove("selected"));
-        card.classList.add("selected");
+    
+    <!-- Second Page: New Section -->
+    <div class="new-section" id="newSection">
+      <button class="close-button" id="closeButton">&times;</button>
+      <!-- New Toggle Buttons (Int / Ext) -->
+      <div class="new-toggle-buttons" id="newToggleButtons">
+        <button id="interior" disabled>
+          interior
+          <span class="price">From $0000</span>
+        </button>
+        <button id="exterior" disabled>
+          exterior
+          <span class="price">From $0000</span>
+        </button>
+        <button id="intExt" disabled>
+          int &amp; ext
+          <span class="price">From $0000</span>
+        </button>
+      </div>
+      <!-- Tier Container -->
+      <div id="selectedCarContainer"></div>
+      <!-- Continue button inside the new section -->
+      <button class="continue-button" id="continueButtonNew">
+        <span>Continue</span>
+      </button>
+    </div>
+    
+    <script>
+      // First page toggle events
+      const chooseWash = document.getElementById("chooseWash");
+      const buildWash = document.getElementById("buildWash");
+      const washDescription = document.getElementById("washDescription");
+
+      chooseWash.addEventListener("click", () => {
+        chooseWash.classList.add("selected");
+        buildWash.classList.remove("selected");
+        washDescription.textContent =
+          "choose a predetermined package of thing we do to your car";
       });
-    });
-    const continueButton = document.getElementById("continueButton");
-    continueButton.addEventListener("click", () => {
-      const selectedCard = document.querySelector(".card.selected");
-      if (selectedCard) {
-        alert("You selected: " + selectedCard.getAttribute("data-value"));
-      } else {
-        alert("Please select a car option to continue.");
+
+      buildWash.addEventListener("click", () => {
+        buildWash.classList.add("selected");
+        chooseWash.classList.remove("selected");
+        washDescription.textContent =
+          "choose each individual thing you want done to your car";
+      });
+
+      // Card selection events: enable new section toggle buttons when a card is selected.
+      const cards = document.querySelectorAll(".card");
+      cards.forEach(card => {
+        card.addEventListener("click", () => {
+          cards.forEach(c => c.classList.remove("selected"));
+          card.classList.add("selected");
+          document.querySelectorAll(".new-toggle-buttons button")
+            .forEach(btn => btn.disabled = false);
+        });
+      });
+
+      // Continue button event to transition from first page to new section.
+      const continueButton = document.getElementById("continueButton");
+      const firstPage = document.getElementById("firstPage");
+      const newSection = document.getElementById("newSection");
+      continueButton.addEventListener("click", () => {
+        const selectedCard = document.querySelector(".card.selected");
+        if (!selectedCard) {
+          alert("Please select a car first!");
+          return;
+        }
+        firstPage.classList.add("hidden");
+        newSection.classList.add("visible");
+        document.querySelectorAll(".new-toggle-buttons button")
+          .forEach(btn => btn.disabled = false);
+      });
+
+      // Function to generate table rows for services.
+      function generateTableRows(servicesAvailable) {
+        let rows = "";
+        for (let i = 1; i <= 6; i++) {
+          const available = i <= servicesAvailable ? "✓" : "✗";
+          rows += `<tr>
+            <td>Service ${i}</td>
+            <td class="placeholder">Placeholder description</td>
+            <td>${available}</td>
+          </tr>`;
+        }
+        return rows;
       }
-    });
-  </script>
-</body>
+      
+      // Function to generate a simple description for mobile view.
+      function generateDescription(servicesAvailable) {
+        return `Includes ${servicesAvailable} service${servicesAvailable > 1 ? "s" : ""}`;
+      }
+
+      // New Section: Toggle buttons event.
+      const newToggleButtons = document.getElementById("newToggleButtons");
+      const toggleButtons = document.querySelectorAll(".new-toggle-buttons button");
+      const selectedCarContainer = document.getElementById("selectedCarContainer");
+
+      toggleButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          const selectedCard = document.querySelector(".card.selected");
+          if (!selectedCard) {
+            alert("Please select a car in the previous screen first!");
+            return;
+          }
+          if (!newToggleButtons.classList.contains("animate"))
+            newToggleButtons.classList.add("animate");
+          toggleButtons.forEach(btn => btn.classList.remove("selected"));
+          button.classList.add("selected");
+
+          const imageSrc = selectedCard.querySelector("img").src;
+          selectedCarContainer.innerHTML = `
+            <div class="tier">
+              <img src="${imageSrc}" alt="Car for BASIC" style="filter: brightness(0) invert(1);" />
+              <div class="tier-label">BASIC</div>
+              <div class="tier-description">${generateDescription(2)}</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Service</th>
+                    <th>Description</th>
+                    <th>Available</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${generateTableRows(2)}
+                </tbody>
+              </table>
+            </div>
+            <div class="tier">
+              <img src="${imageSrc}" alt="Car for GOLD" style="filter: brightness(0) saturate(100%) invert(71%) sepia(90%) saturate(500%) hue-rotate(10deg) brightness(1.1) contrast(1);" />
+              <div class="tier-label">GOLD</div>
+              <div class="tier-description">${generateDescription(4)}</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Service</th>
+                    <th>Description</th>
+                    <th>Available</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${generateTableRows(4)}
+                </tbody>
+              </table>
+            </div>
+            <div class="tier">
+              <img src="${imageSrc}" alt="Car for PREMIUM" style="filter: brightness(0) saturate(100%) invert(40%) sepia(100%) saturate(2000%) hue-rotate(190deg) brightness(1) contrast(1);" />
+              <div class="tier-label">PREMIUM</div>
+              <div class="tier-description">${generateDescription(6)}</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Service</th>
+                    <th>Description</th>
+                    <th>Available</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${generateTableRows(6)}
+                </tbody>
+              </table>
+            </div>
+          `;
+          selectedCarContainer.classList.add("visible");
+        });
+      });
+
+      // Tier card selectable event.
+      selectedCarContainer.addEventListener("click", function(e) {
+        const tier = e.target.closest(".tier");
+        if (tier) {
+          const tiers = selectedCarContainer.querySelectorAll(".tier");
+          tiers.forEach(t => t.classList.remove("selected"));
+          tier.classList.add("selected");
+        }
+      });
+
+      // Continue button event inside the new section.
+      const continueButtonNew = document.getElementById("continueButtonNew");
+      continueButtonNew.addEventListener("click", () => {
+        const selectedTier = document.querySelector("#selectedCarContainer .tier.selected");
+        if (!selectedTier) {
+          alert("Please select a tier first!");
+          return;
+        }
+        // Proceed with the next step (e.g., finalize booking, navigate to payment, etc.)
+        alert("Proceeding to the next step...");
+      });
+
+      // Close button to reset new section and return to first page.
+      const closeButton = document.getElementById("closeButton");
+      closeButton.addEventListener("click", () => {
+        newSection.classList.remove("visible");
+        firstPage.classList.remove("hidden");
+        newToggleButtons.classList.remove("animate");
+        selectedCarContainer.classList.remove("visible");
+        toggleButtons.forEach(btn => {
+          btn.classList.remove("selected");
+          btn.disabled = true;
+        });
+      });
+    </script>
+  </body>
 </html>
