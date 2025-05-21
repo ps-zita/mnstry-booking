@@ -65,7 +65,8 @@ body {
   pointer-events: auto;
 }
 
-.button.active, .button.selected {
+.button.active,
+.button.selected {
   background-color: rgba(10, 84, 108, 0.9);
   opacity: 1;
 }
@@ -115,14 +116,10 @@ body {
   color: white;
   background-color: rgba(10, 84, 108, 0.5);
   padding: 20px;
-  box-shadow: inset 0px 0px 30px 5px rgba(0, 104, 139, 0.9), 
-    inset 0px 0px 15px 3px rgba(173, 216, 230, 0.9);
+  box-shadow: inset 0px 0px 30px 5px rgba(0, 104, 139, 0.9),
+              inset 0px 0px 15px 3px rgba(173, 216, 230, 0.9);
   text-align: center;
-  transition: 
-    box-shadow 0.3s, 
-    background-color 0.3s,
-    transform 0.18s,
-    opacity 0.18s;
+  transition: box-shadow 0.3s, background-color 0.3s, transform 0.18s, opacity 0.18s;
   cursor: pointer;
   opacity: 0.7;
 }
@@ -187,8 +184,8 @@ body {
 .continue-button.enabled {
   background-color: rgba(10, 84, 108, 0.5);
   border: 1px solid lightblue;
-  box-shadow: inset 0px 0px 30px 5px rgba(0, 104, 139, 0.9), 
-    inset 0px 0px 15px 3px rgba(173, 216, 230, 0.9);
+  box-shadow: inset 0px 0px 30px 5px rgba(0, 104, 139, 0.9),
+              inset 0px 0px 15px 3px rgba(173, 216, 230, 0.9);
   cursor: pointer;
 }
 
@@ -233,8 +230,8 @@ body {
   color: white;
   background-color: rgba(10, 84, 108, 0.5);
   padding: 0;
-  box-shadow: inset 0px 0px 30px 5px rgba(0, 104, 139, 0.9), 
-    inset 0px 0px 15px 3px rgba(173, 216, 230, 0.9);
+  box-shadow: inset 0px 0px 30px 5px rgba(0, 104, 139, 0.9),
+              inset 0px 0px 15px 3px rgba(173, 216, 230, 0.9);
   text-align: left;
   transition: box-shadow 0.3s, background 0.3s, transform 0.18s, opacity 0.18s;
   cursor: pointer;
@@ -341,7 +338,9 @@ body {
   display: none;
   opacity: 0;
   z-index: 1000;
-  background: transparent;
+  background-image: url("grain.jpg");
+  background-size: cover;
+  background-position: center;
 }
 
 #secondaryContent.active {
@@ -384,9 +383,7 @@ body {
   overflow: hidden;
   background: none;
   z-index: 2;
-  transition:
-    top 0.5s cubic-bezier(.56, .07, .58, 1.02),
-    transform 0.5s cubic-bezier(.56, .07, .58, 1.02);
+  transition: top 0.5s cubic-bezier(.56, .07, .58, 1.02), transform 0.5s cubic-bezier(.56, .07, .58, 1.02);
 }
 
 #seg2ButtonContainer.moved-up-more {
@@ -485,6 +482,108 @@ body {
   transform: scale(1.05);
 }
 
+/* NEW MOBILE OVERRIDES for SEGMENT 2 & SEGMENT 3 */
+@media (max-width: 900px) {
+  /* Move seg2 button container to top without animation */
+  #seg2ButtonContainer {
+    position: fixed;
+    top: 10px !important;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: none !important;
+  }
+
+  /* Provide extra blank space above seg2 cards by using padding on their container */
+  #secondaryContent .card-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    padding-top: 5vh;
+    overflow-y: auto;
+    height: 80vh;
+    scrollbar-width: none;
+  }
+  #secondaryContent .card-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Adjust seg3Sidebar width in mobile to 100vw */
+  #seg3Sidebar {
+    width: 100vw !important;
+    min-width: 100vw !important;
+    max-width: 100vw !important;
+    border-radius: 0;
+    padding: 0;
+  }
+  #seg3Sidebar .seg3-header,
+  #seg3Sidebar .seg3-content {
+    padding-left: 4vw;
+    padding-right: 4vw;
+  }
+
+  .card-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .button-container {
+    width: 90%;
+    max-width: 350px;
+  }
+
+  .card {
+    width: 90%;
+    max-width: 250px;
+  }
+  
+  /* New styles for the customer input fields (name, phone number, car make & model) */
+  .user-details .input-group {
+    margin-bottom: 15px;
+  }
+  .user-details .input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 1rem;
+    color: #eee;
+  }
+  .user-details .input-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #b2c9db;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #333;
+  }
+}
+
+/* Universal styling for the customer details form */
+.user-details {
+  margin: 20px 0;
+}
+.user-details .input-group {
+  margin-bottom: 15px;
+}
+.user-details .input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  color: #222;
+}
+.user-details .input-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #b2c9db;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+}
+
 /* ----------- SEGMENT 3 SIDEBAR (APPLE-STYLE CHECKOUT) ------------ */
 #seg3Sidebar {
   position: fixed;
@@ -502,7 +601,6 @@ body {
   flex-direction: column;
   align-items: stretch;
   overflow-y: auto;
-  opacity: 1;
   transform: translateX(100%);
   transition: transform 0.65s cubic-bezier(.66,.13,.38,1.06), opacity 0.47s;
   font-family: "Roboto", sans-serif;
@@ -667,35 +765,4 @@ body {
 #seg3Sidebar .checkout-btn:hover {
   background: linear-gradient(90deg, #ffe799 0%, #ffe066 100%);
   color: #0a546c;
-}
-
-@media (max-width: 900px) {
-  #seg3Sidebar {
-    width: 97vw;
-    min-width: 0;
-    max-width: 100vw;
-    border-radius: 0;
-    padding: 0;
-  }
-  #seg3Sidebar .seg3-header,
-  #seg3Sidebar .seg3-content {
-    padding-left: 4vw;
-    padding-right: 4vw;
-  }
-
-  .card-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-  }
-
-  .button-container {
-    width: 90%;
-    max-width: 350px;
-  }
-
-  .card {
-    width: 90%;
-    max-width: 250px;
-  }
 }

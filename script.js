@@ -260,15 +260,13 @@ document.addEventListener('DOMContentLoaded', function() {
       closeCalendarModal();
       // Assemble reserved_on as an ISO 8601 UTC string.
       const reserved_on = `${date}T${time}:00Z`;
-      // Merge booking info with required EasyWeek API fields.
+      // Merge booking info with required API fields.
       pendingBookingData = Object.assign({}, pendingBookingData, {
         reserved_on,
         seg2Tab: selectedSeg2Tab,
         seg2Card: selectedSeg2CardTitle,
         service_uuid: serviceUUIDMapping[selectedSeg2CardTitle] || "placeholder-uuid",
-        // EasyWeek API required fields (temporary defaults, to be updated in seg3)
         location_uuid: "47191ab9-1611-4468-a49c-efcd4ee1109f",
-        // These fields will be updated in seg3 when the user enters their details.
         customer_phone: "",
         customer_first_name: "",
         customer_email: "user@example.com",
@@ -372,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
       });
       seg3Sidebar.querySelector('.checkout-btn').onclick = function() {
-        // Get the values from the input fields.
         const nameInput = document.getElementById("customerName");
         const phoneInput = document.getElementById("customerPhone");
         const carInput = document.getElementById("carMakeModel");
@@ -380,12 +377,9 @@ document.addEventListener('DOMContentLoaded', function() {
           alert("Please fill in your name, phone number, and car make/model.");
           return;
         }
-        // Update pendingBookingData with the input values.
         pendingBookingData.customer_first_name = nameInput.value.trim();
         pendingBookingData.customer_phone = phoneInput.value.trim();
-        // Use the car make and model as the booking comment.
         pendingBookingData.booking_comment = carInput.value.trim();
-        // Proceed to the Square payment.
         openSquarePaymentModal();
       };
     }
@@ -494,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (paymentSuccessful) {
               document.getElementById("square-payment-status").innerText = "✅ Payment Successful!";
               squareModal.classList.remove("show");
-              // Call our backend endpoint to finalize booking.
+              // Finalize booking after successful payment.
               await finalizeBooking();
             } else {
               document.getElementById("square-payment-status").innerText = "❌ Payment Failed!";
@@ -529,12 +523,9 @@ document.addEventListener('DOMContentLoaded', function() {
   async function finalizeBooking() {
     console.log("Finalizing booking with data:", pendingBookingData);
     try {
-      // Call the backend endpoint (/book) which forwards data to EasyWeek with required headers.
       const response = await fetch("https://mnstry.duckdns.org:3001/book", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(pendingBookingData)
       });
       if (!response.ok) {
