@@ -167,6 +167,8 @@ body {
 }
 
 .continue-button {
+  position: relative;
+  bottom: 8dvb;
   margin: 80px auto;
   display: block;
   width: 220px;
@@ -206,7 +208,7 @@ body {
   bottom: 0;
   width: 100vw;
   /* Use smallest viewport height (svh) for full viewability on Safari */
-  height: 100svh;
+  height: 100vh;
   display: none;
   opacity: 0;
   z-index: 1000;
@@ -214,7 +216,7 @@ body {
   background-size: cover;
   background-position: center;
   /* Increase safe-area inset padding for Safari */
-  padding-bottom: calc(env(safe-area-inset-bottom) + 40px);
+  bottom: 20%;
 }
 
 #secondaryContent.active {
@@ -360,10 +362,13 @@ body {
 #seg2RelativeWrap {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 50dvh;
   display: flex;
+  top: 30vh;
   align-items: center;
   justify-content: center;
+  padding-bottom: 50px;
+
 }
 
 #backButton {
@@ -528,6 +533,7 @@ body {
     max-width: 100vw !important;
     border-radius: 0;
     padding: 0;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
   }
   #seg3Sidebar .seg3-header,
   #seg3Sidebar .seg3-content {
