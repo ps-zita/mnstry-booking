@@ -5,8 +5,8 @@ body {
   background-size: cover;
   margin: 0;
   font-family: "Roboto", sans-serif;
-  /* Use smallest viewport height (svh) for consistent appearance and add extra safe-area padding for Safari */
-  min-height: 100svh;
+  /* Use dynamic viewport height for body and add extra safe-area padding */
+  min-height: 100dvh;
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
 }
 
@@ -205,7 +205,7 @@ body {
   right: 0;
   bottom: 0;
   width: 100vw;
-  /* Use svh so the content is fully viewable; 100svh represents the smallest viewport height */
+  /* Use smallest viewport height (svh) for full viewability on Safari */
   height: 100svh;
   display: none;
   opacity: 0;
@@ -213,7 +213,7 @@ body {
   background-image: url("grain.jpg");
   background-size: cover;
   background-position: center;
-  /* Increased Safari safe-area inset padding */
+  /* Increase safe-area inset padding for Safari */
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
 }
 
@@ -245,6 +245,7 @@ body {
   to { opacity: 1; }
 }
 
+/* Styles for seg2 cards */
 #secondaryContent .seg2-card {
   width: 250px;
   min-height: 220px;
@@ -377,10 +378,12 @@ body {
   z-index: 10;
 }
 
+/* Update the seg2 button container to use dynamic viewport height (dvh) */
 #seg2ButtonContainer {
   position: absolute;
   left: 50%;
-  top: 50%;
+  /* Use 50dvh to center vertically based on dynamic viewport height */
+  top: 50dvh;
   transform: translate(-50%, -50%);
   display: flex;
   width: 350px;
@@ -395,22 +398,22 @@ body {
 }
 
 #seg2ButtonContainer.moved-up-more {
-  top: calc(50% - 195px);
+  top: calc(50dvh - 45px - 20px);
 }
 #seg2ButtonContainer.moved-interior {
-  top: calc(50% - 175px);
+  top: calc(50dvh - 35px - 20px);
 }
 #seg2ButtonContainer.moved-int-ext {
-  top: calc(50% - 180px);
+  top: calc(50dvh - 40px - 20px);
 }
 #seg2ButtonContainer.moved {
-  top: calc(50% - 170px);
+  top: calc(50dvh - 30px - 20px);
 }
 
 #seg2TitleContainer {
   position: absolute;
   left: 50%;
-  top: calc(50% - 240px);
+  top: calc(50dvh - 90px);
   transform: translate(-50%, -50%);
   text-align: center;
   opacity: 0;
@@ -501,7 +504,7 @@ body {
     transition: none !important;
   }
   
-  /* Adjust card container for mobile using dynamic viewport height (dvh not used here to favor svh) */
+  /* Adjust card container for mobile using svh for consistency */
   #secondaryContent .card-container {
     flex-direction: column;
     align-items: center;
@@ -608,8 +611,8 @@ body {
   width: 33vw;
   min-width: 320px;
   max-width: 480px;
-  /* Use svh to ensure the sidebar fully fits within the visible area */
-  height: 100svh;
+  /* Use dynamic viewport height (dvh) for the sidebar */
+  height: 100dvh;
   background: #1d2530;
   box-shadow: -8px 0 36px 0 rgba(0,104,139,0.32), 0 0 30px 5px #1d3557 inset;
   border-left: 2px solid #b2c9db;
@@ -621,6 +624,7 @@ body {
   transform: translateX(100%);
   transition: transform 0.65s cubic-bezier(.66,.13,.38,1.06), opacity 0.47s;
   font-family: "Roboto", sans-serif;
+  /* Increase safe padding for Safari */
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
 }
 
