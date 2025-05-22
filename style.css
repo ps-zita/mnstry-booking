@@ -462,6 +462,7 @@ body {
   transition: opacity 0.3s, background 0.3s, color 0.3s;
   background-color: grey !important;
   color: #eee;
+  top: 100%;
 }
 
 #seg2ContinueButton.visible {
@@ -778,14 +779,3 @@ body {
   color: #0a546c;
 }
 
-@media (max-width: 900px) {
-  /* Position seg2 continue button 1/3 up from the bottom of the viewport */
-  #seg2ContinueButton {
-    position: fixed;
-    top: 8vh; /* Adjust as needed for your layout */
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 0;
-    z-index: 10;
-  }
-}

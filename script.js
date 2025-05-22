@@ -1,3 +1,22 @@
+document.querySelectorAll('.seg2-card').forEach(cardEl => {
+  cardEl.addEventListener('click', function(e) {
+    // Prevent default behavior and stop propagation
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Clear any previous selections in the container
+    const container = this.closest('.card-container');
+    container.querySelectorAll('.seg2-card').forEach(c => c.classList.remove('selected'));
+    
+    // Use a short timeout to add the selected state
+    setTimeout(() => {
+      this.classList.add('selected');
+      seg2ContinueButton.classList.add('enabled');
+      selectedSeg2CardTitle = this.getAttribute('data-title');
+    }, 0);
+  });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
   const cards = document.querySelectorAll('.card');
   const continueButton = document.getElementById('continueButton');
