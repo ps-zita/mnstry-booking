@@ -782,4 +782,14 @@ body {
   #seg2ContinueButton {
     margin-bottom: 20svh;
   }
+
+  #secondaryContent .card-container {
+    gap: 20px;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    display: none;
+    margin-top: auto;
+    transition: opacity 0.5s cubic-bezier(.56, .07, .58, 1.02);
+  }
 }
