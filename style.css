@@ -5,6 +5,9 @@ body {
   background-size: cover;
   margin: 0;
   font-family: "Roboto", sans-serif;
+  /* Use dynamic viewport height and apply safe area bottom inset for Safari */
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .container {
@@ -194,10 +197,36 @@ body {
   transform: scale(1.05);
 }
 
-/* SEGMENT 2: REWORKED CARDS */
+/* SEGMENT 2: REWORKED CARDS (SEG2) */
+#secondaryContent {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  /* Use dynamic viewport height for accurate sizing on mobile */
+  height: 100dvh;
+  display: none;
+  opacity: 0;
+  z-index: 1000;
+  background-image: url("grain.jpg");
+  background-size: cover;
+  background-position: center;
+  /* Include safe-area inset for Safari */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+#secondaryContent.active {
+  display: flex;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
 #secondaryContent .card-container {
   gap: 20px;
   justify-content: center;
+  /* Initially hidden until activated */
   opacity: 0;
   pointer-events: none;
   display: none;
@@ -327,32 +356,11 @@ body {
   font-weight: bold;
 }
 
-#secondaryContent {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 100vh;
-  display: none;
-  opacity: 0;
-  z-index: 1000;
-  background-image: url("grain.jpg");
-  background-size: cover;
-  background-position: center;
-}
-
-#secondaryContent.active {
-  display: flex;
-  opacity: 1;
-  transition: opacity 0.5s ease;
-}
-
+/* SEGMENT 2 CONTAINER & BUTTONS */
 #seg2RelativeWrap {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 100vh; /* keep full height for positioning relative elements */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -383,7 +391,8 @@ body {
   overflow: hidden;
   background: none;
   z-index: 2;
-  transition: top 0.5s cubic-bezier(.56, .07, .58, 1.02), transform 0.5s cubic-bezier(.56, .07, .58, 1.02);
+  transition: top 0.5s cubic-bezier(.56, .07, .58, 1.02),
+              transform 0.5s cubic-bezier(.56, .07, .58, 1.02);
 }
 
 #seg2ButtonContainer.moved-up-more {
@@ -454,7 +463,7 @@ body {
   margin-top: 0;
 }
 
-/* Segment 2 continue button starts invisible until a tab is pressed */
+/* Segment 2 Continue Button */
 #seg2ContinueButton {
   opacity: 0;
   pointer-events: none;
@@ -462,7 +471,6 @@ body {
   transition: opacity 0.3s, background 0.3s, color 0.3s;
   background-color: grey !important;
   color: #eee;
-  top: 100%;
 }
 
 #seg2ContinueButton.visible {
@@ -483,9 +491,9 @@ body {
   transform: scale(1.05);
 }
 
-/* NEW MOBILE OVERRIDES for SEGMENT 2 & SEGMENT 3 */
+/* MOBILE OVERRIDES for SEGMENT 2 & SEGMENT 3 */
 @media (max-width: 900px) {
-  /* Move seg2 button container to top without animation */
+  /* Fix seg2 button container at top */
   #seg2ButtonContainer {
     position: fixed;
     top: 10px !important;
@@ -493,10 +501,8 @@ body {
     transform: translateX(-50%);
     transition: none !important;
   }
-
-  /* Provide extra blank space above seg2 cards by using padding on their container.
-     The container is still fixed at 80vh to allow overall page scrolling if needed,
-     but individual seg2 cards now size naturally to show all content. */
+  
+  /* Adjust card container for mobile using dynamic viewport height */
   #secondaryContent .card-container {
     flex-direction: column;
     align-items: center;
@@ -506,14 +512,14 @@ body {
     max-width: 100%;
     padding-top: 5vh;
     overflow-y: auto;
-    height: 80vh;
+    height: 80dvh;
     scrollbar-width: none;
   }
   #secondaryContent .card-container::-webkit-scrollbar {
     display: none;
   }
-
-  /* Adjust seg3Sidebar width in mobile to 100vw */
+  
+  /* Adjust seg3Sidebar width for mobile */
   #seg3Sidebar {
     width: 100vw !important;
     min-width: 100vw !important;
@@ -526,25 +532,24 @@ body {
     padding-left: 4vw;
     padding-right: 4vw;
   }
-
+  
   .card-container {
     flex-direction: column;
     align-items: center;
     gap: 15px;
   }
-
+  
   .button-container {
     width: 90%;
     max-width: 350px;
   }
-
+  
   .card {
     width: 90%;
     max-width: 250px;
   }
   
-  /* Modified seg2 cards to size naturally to show all content.
-     No internal scrolling is applied to the cards. */
+  /* Allow seg2 cards to size naturally */
   #secondaryContent .seg2-card {
     width: 250px;
     min-height: auto;
@@ -552,7 +557,7 @@ body {
     overflow: visible;
   }
   
-  /* New styles for the customer input fields (name, phone number, car make & model) */
+  /* Styles for customer input fields on mobile */
   .user-details .input-group {
     margin-bottom: 15px;
   }
@@ -573,7 +578,7 @@ body {
   }
 }
 
-/* Universal styling for the customer details form */
+/* UNIVERSAL CUSTOMER DETAILS FORM STYLES */
 .user-details {
   margin: 20px 0;
 }
@@ -596,7 +601,7 @@ body {
   color: #333;
 }
 
-/* ----------- SEGMENT 3 SIDEBAR (APPLE-STYLE CHECKOUT) ------------ */
+/* SEGMENT 3 SIDEBAR (APPLE-STYLE CHECKOUT) */
 #seg3Sidebar {
   position: fixed;
   top: 0;
@@ -604,7 +609,8 @@ body {
   width: 33vw;
   min-width: 320px;
   max-width: 480px;
-  height: 100vh;
+  /* Use dynamic viewport height for a fluid sidebar experience */
+  height: 100dvh;
   background: #1d2530;
   box-shadow: -8px 0 36px 0 rgba(0,104,139,0.32), 0 0 30px 5px #1d3557 inset;
   border-left: 2px solid #b2c9db;
@@ -616,7 +622,9 @@ body {
   transform: translateX(100%);
   transition: transform 0.65s cubic-bezier(.66,.13,.38,1.06), opacity 0.47s;
   font-family: "Roboto", sans-serif;
+  padding-bottom: env(safe-area-inset-bottom);
 }
+
 #seg3Sidebar.visible {
   transform: translateX(0);
   opacity: 1;
@@ -646,6 +654,7 @@ body {
   transition: color 0.18s;
   line-height: 1;
 }
+
 #seg3Sidebar .seg3-x:hover {
   color: #ffe066;
 }
@@ -695,11 +704,13 @@ body {
   margin-bottom: 13px;
   letter-spacing: 0.01em;
 }
+
 #seg3Sidebar .addon-list {
   padding: 0;
   margin: 0;
   list-style: none;
 }
+
 #seg3Sidebar .addon-item {
   display: flex;
   align-items: center;
@@ -709,15 +720,18 @@ body {
   font-size: 1.04rem;
   color: #fff;
 }
+
 #seg3Sidebar .addon-item:last-child {
   border-bottom: none;
 }
+
 #seg3Sidebar .addon-label {
   display: flex;
   align-items: center;
   gap: 14px;
   cursor: pointer;
 }
+
 #seg3Sidebar .addon-checkbox {
   accent-color: #ffe066;
   width: 20px;
@@ -725,6 +739,7 @@ body {
   border-radius: 7px;
   margin-right: 9px;
 }
+
 #seg3Sidebar .addon-price {
   color: #ffe066;
   font-weight: 500;
@@ -774,8 +789,8 @@ body {
   transition: background 0.15s, color 0.15s;
   letter-spacing: 0.02em;
 }
+
 #seg3Sidebar .checkout-btn:hover {
   background: linear-gradient(90deg, #ffe799 0%, #ffe066 100%);
   color: #0a546c;
 }
-
