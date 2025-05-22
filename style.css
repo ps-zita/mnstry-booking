@@ -493,7 +493,9 @@ body {
     transition: none !important;
   }
 
-  /* Provide extra blank space above seg2 cards by using padding on their container */
+  /* Provide extra blank space above seg2 cards by using padding on their container.
+     The container is still fixed at 80vh to allow overall page scrolling if needed,
+     but individual seg2 cards now size naturally to show all content. */
   #secondaryContent .card-container {
     flex-direction: column;
     align-items: center;
@@ -538,6 +540,15 @@ body {
   .card {
     width: 90%;
     max-width: 250px;
+  }
+  
+  /* Modified seg2 cards to size naturally to show all content.
+     No internal scrolling is applied to the cards. */
+  #secondaryContent .seg2-card {
+    width: 250px;
+    min-height: auto;
+    height: auto;
+    overflow: visible;
   }
   
   /* New styles for the customer input fields (name, phone number, car make & model) */

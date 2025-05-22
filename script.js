@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let selectedSize = '';
   let selectedSeg2Tab = 'interior';
   let selectedSeg2CardTitle = '';
-  let pendingBookingData = null;
+  let pendingBookingData = {};
   let seg3Sidebar = null;
   let squareModal = null;
   let card; // This is the Square card instance.
@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   // Square configuration parameters.
-  const appId = "sandbox-sq0idb-BZ8hmKvYm_lGjEhKgddQwA";
-  const locationId = "LHRGP0KGDXTKV";
+  const appId = "sq0idp-2UIVBa7RW5RhNJbPp5VAOg";
+  const locationId = "FK7Q4N5CDQQH5";
 
   // Price configuration and available add-ons.
   const prices = {
@@ -260,7 +260,6 @@ document.addEventListener('DOMContentLoaded', function() {
       closeCalendarModal();
       // Assemble reserved_on as an ISO 8601 UTC string.
       const reserved_on = `${date}T${time}:00Z`;
-      // Merge booking info with required API fields.
       pendingBookingData = Object.assign({}, pendingBookingData, {
         reserved_on,
         seg2Tab: selectedSeg2Tab,
@@ -272,6 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
         customer_email: "user@example.com",
         booking_comment: ""
       });
+      // Proceed to show checkout sidebar.
       showSeg3Sidebar({ reserved_on, seg2Tab: selectedSeg2Tab, seg2Card: selectedSeg2CardTitle });
     };
     calendarModal.style.display = 'flex';
@@ -292,14 +292,26 @@ document.addEventListener('DOMContentLoaded', function() {
     if (selectedSize && prices[seg2Tab] && prices[seg2Tab][selectedSize] && prices[seg2Tab][selectedSize][seg2Card]) {
       basePrice = prices[seg2Tab][selectedSize][seg2Card];
     }
+    // Calculate the full charge in cents.
+    const baseChargeCents = Math.round(basePrice * 100);
+    // Calculate additional transaction fee of 1.6%.
+    const feeCents = Math.round(baseChargeCents * 0.016);
+    // Calculate total charge including fee.
+    const totalChargeCents = baseChargeCents + feeCents;
+    // Save the total charge amount (in cents) in pendingBookingData.
+    pendingBookingData.amount = totalChargeCents;
     let selectedAddons = [];
+    // Update calculateTotal function to include fee.
     function calculateTotal() {
-      let total = basePrice;
+      // Add any addon prices to the base price first.
+      let totalDollars = basePrice;
       for (const key of selectedAddons) {
         const found = addons.find(a => a.key === key);
-        if (found) total += found.price;
+        if (found) totalDollars += found.price;
       }
-      return total;
+      // Then calculate fee on the base amount (fee not applied on addons).
+      const feeDollars = Math.round(basePrice * 100 * 0.016) / 100;
+      return (totalDollars + feeDollars).toFixed(2);
     }
     seg3Sidebar = document.createElement('div');
     seg3Sidebar.id = 'seg3Sidebar';
@@ -317,6 +329,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="summary-row"><span><strong>Service:</strong></span><span>${{ 'interior': 'Interior Only', 'exterior': 'Exterior Only', 'int-ext': 'Interior & Exterior' }[seg2Tab] || 'Unknown'}</span></div>
             <div class="summary-row"><span><strong>Vehicle Size:</strong></span><span>${selectedSize || 'Not selected'}</span></div>
             <div class="summary-row"><span><strong>Base Price:</strong></span><span>$${basePrice}</span></div>
+            <div class="summary-row"><span><strong>Transaction Fee (1.6%):</strong></span><span>$${(feeCents / 100).toFixed(2)}</span></div>
+            <div class="summary-row"><span><strong>Total Charge:</strong></span><span>$${(totalChargeCents / 100).toFixed(2)}</span></div>
           </div>
           <div class="user-details">
             <div class="input-group">
@@ -348,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <div class="total-section">
             <div>
-              <span class="total-label">Total:</span>
+              <span class="total-label">Total (Base + Fee + Add-ons):</span>
               <span class="total-value">$${calculateTotal()}</span>
             </div>
           </div>
@@ -481,10 +495,29 @@ document.addEventListener('DOMContentLoaded', function() {
       await initializeSquareCard(payments);
       document.getElementById("square-card-button").addEventListener("click", async function () {
         try {
-          const tokenResult = await card.tokenize();
+          // Create verificationDetails with full amount.
+          const verificationDetails = {
+            amount: (pendingBookingData.amount / 100).toFixed(2), // string in dollars
+            billingContact: {
+              givenName: 'Test',
+              familyName: 'User',
+              email: 'test@example.com',
+              phone: '0000000000',
+              addressLines: ['123 Test St'],
+              city: 'Test City',
+              state: 'TS',
+              countryCode: 'AU'
+            },
+            currencyCode: 'AUD',
+            intent: 'CHARGE',
+            customerInitiated: true,
+            sellerKeyedIn: false
+          };
+          const tokenResult = await card.tokenize(verificationDetails);
           if (tokenResult.status === "OK") {
             const token = tokenResult.token;
-            const paymentSuccessful = await createSquarePayment(token);
+            // Pass the full total charge (in cents) along with the token.
+            const paymentSuccessful = await createSquarePayment(token, pendingBookingData.amount);
             if (paymentSuccessful) {
               document.getElementById("square-payment-status").innerText = "✅ Payment Successful!";
               squareModal.classList.remove("show");
@@ -494,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
               document.getElementById("square-payment-status").innerText = "❌ Payment Failed!";
             }
           } else {
-            throw new Error("Tokenization failed");
+            throw new Error("Tokenization failed with status: " + tokenResult.status);
           }
         } catch (error) {
           document.getElementById("square-payment-status").innerText = "❌ Payment Failed!";
@@ -505,16 +538,23 @@ document.addEventListener('DOMContentLoaded', function() {
     squareModal.classList.add("show");
   }
 
-  async function createSquarePayment(token) {
+  async function createSquarePayment(token, amount) {
     try {
-      const paymentResponse = await fetch("https://mnstry.duckdns.org:3001/process-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nonce: token, bookingId: "pending-booking" })
+      const paymentResponse = await axios.post("https://connect.squareup.com/v2/payments", {
+        source_id: token,
+        idempotency_key: Date.now().toString(),
+        amount_money: { amount: amount, currency: "AUD" }
+      }, {
+        headers: { 
+          "Authorization": `Bearer ${"EAAAl_aH-FzgdiGtcdmHDToKcHyoYaqShKbTV_WwaaI713SYOcbP_w8r002ih2mP"}`, 
+          "Content-Type": "application/json" 
+        }
       });
-      return paymentResponse.ok;
-    } catch (err) {
-      console.error("Error processing Square payment", err);
+      const payment = paymentResponse.data.payment;
+      console.log(`Payment Successful! Transaction ID: ${payment.id}`);
+      return true;
+    } catch (error) {
+      console.error("Payment Failed:", error.response ? error.response.data : error.message);
       return false;
     }
   }
