@@ -518,7 +518,7 @@ body {
     min-width: 100vw !important;
     max-width: 100vw !important;
     border-radius: 0;
-    padding: 0;
+    padding-bottom: 10svh;
   }
   #seg3Sidebar .seg3-header,
   #seg3Sidebar .seg3-content {
