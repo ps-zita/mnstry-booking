@@ -5,7 +5,7 @@ body {
   background-size: cover;
   margin: 0;
   font-family: "Roboto", sans-serif;
-  /* Use dynamic viewport height for body and add extra safe-area padding */
+  /* Use dynamic viewport height and add safe padding to body */
   min-height: 100dvh;
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
 }
@@ -205,7 +205,8 @@ body {
   right: 0;
   bottom: 0;
   width: 100vw;
-  /* Use smallest viewport height (svh) for full viewability on Safari */
+  /* Use smallest viewport height (svh) so content does not get cut off; 
+     ensures full viewability even when the bottom safe area appears */
   height: 100svh;
   display: none;
   opacity: 0;
@@ -213,7 +214,6 @@ body {
   background-image: url("grain.jpg");
   background-size: cover;
   background-position: center;
-  /* Increase safe-area inset padding for Safari */
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
 }
 
@@ -378,11 +378,11 @@ body {
   z-index: 10;
 }
 
-/* Update the seg2 button container to use dynamic viewport height (dvh) */
+/* Seg2 Button Container using dynamic viewport height (dvh) and including safe-area padding */
 #seg2ButtonContainer {
   position: absolute;
   left: 50%;
-  /* Use 50dvh to center vertically based on dynamic viewport height */
+  /* Center vertically using dynamic viewport height */
   top: 50dvh;
   transform: translate(-50%, -50%);
   display: flex;
@@ -393,6 +393,8 @@ body {
   overflow: hidden;
   background: none;
   z-index: 2;
+  /* Add safe-area padding to this container */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
   transition: top 0.5s cubic-bezier(.56, .07, .58, 1.02),
               transform 0.5s cubic-bezier(.56, .07, .58, 1.02);
 }
@@ -502,6 +504,8 @@ body {
     left: 50%;
     transform: translateX(-50%);
     transition: none !important;
+    /* Ensure safe-area padding is still applied */
+    padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
   }
   
   /* Adjust card container for mobile using svh for consistency */
@@ -611,7 +615,7 @@ body {
   width: 33vw;
   min-width: 320px;
   max-width: 480px;
-  /* Use dynamic viewport height (dvh) for the sidebar */
+  /* Use dynamic viewport height for the sidebar */
   height: 100dvh;
   background: #1d2530;
   box-shadow: -8px 0 36px 0 rgba(0,104,139,0.32), 0 0 30px 5px #1d3557 inset;
@@ -624,7 +628,6 @@ body {
   transform: translateX(100%);
   transition: transform 0.65s cubic-bezier(.66,.13,.38,1.06), opacity 0.47s;
   font-family: "Roboto", sans-serif;
-  /* Increase safe padding for Safari */
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
 }
 
