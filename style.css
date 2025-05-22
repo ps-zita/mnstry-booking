@@ -352,7 +352,7 @@ body {
 #seg2RelativeWrap {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -776,10 +776,4 @@ body {
 #seg3Sidebar .checkout-btn:hover {
   background: linear-gradient(90deg, #ffe799 0%, #ffe066 100%);
   color: #0a546c;
-}
-
-@media (max-width: 900px) {
-  #seg2ContinueButton {
-    margin-bottom: 60svh;
-  }
 }

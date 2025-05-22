@@ -1,32 +1,4 @@
-document.querySelectorAll('.seg2-card').forEach(cardEl => {
-  cardEl.addEventListener('click', function(e) {
-    // Prevent default behavior and stop propagation
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Clear any previous selections in the container
-    const container = this.closest('.card-container');
-    container.querySelectorAll('.seg2-card').forEach(c => c.classList.remove('selected'));
-    
-    // Use a short timeout to add the selected state
-    setTimeout(() => {
-      this.classList.add('selected');
-      seg2ContinueButton.classList.add('enabled');
-      selectedSeg2CardTitle = this.getAttribute('data-title');
-    }, 0);
-  });
-});
-
 document.addEventListener('DOMContentLoaded', function() {
-  const cards = document.querySelectorAll('.card');
-  const continueButton = document.getElementById('continueButton');
-  const mainContent = document.getElementById('mainContent');
-  const secondaryContent = document.getElementById('secondaryContent');
-  const backButton = document.getElementById('backButton');
-  const seg2ButtonContainer = document.getElementById('seg2ButtonContainer');
-  const seg2Buttons = document.querySelectorAll('.seg2button');
-  const seg2ContinueButton = document.getElementById('seg2ContinueButton');
-
   // Global booking and payment-related state.
   let selectedSize = '';
   let selectedSeg2Tab = 'interior';
@@ -79,6 +51,19 @@ document.addEventListener('DOMContentLoaded', function() {
     { key: "dent", name: "Dent Removal", price: 75 }
   ];
 
+  // Determine if we are in mobile mode.
+  const isMobile = window.innerWidth <= 900;
+
+  // Get elements
+  const cards = document.querySelectorAll('.card');
+  const continueButton = document.getElementById('continueButton');
+  const mainContent = document.getElementById('mainContent');
+  const secondaryContent = document.getElementById('secondaryContent');
+  const backButton = document.getElementById('backButton');
+  const seg2ButtonContainer = document.getElementById('seg2ButtonContainer');
+  const seg2Buttons = document.querySelectorAll('.seg2button');
+  let seg2ContinueButton = document.getElementById('seg2ContinueButton');
+
   // --- SEGMENT 1: Vehicle Size Selection ---
   cards.forEach(cardEl => {
     cardEl.addEventListener('click', function() {
@@ -98,7 +83,10 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
           secondaryContent.classList.add('active');
           hideAllCardContainers();
-          seg2ContinueButton.classList.remove('enabled', 'visible');
+          // If on desktop, reset the continue button state.
+          if (seg2ContinueButton) {
+            seg2ContinueButton.classList.remove('enabled', 'visible');
+          }
         }, 50);
       }, 500);
     }
@@ -108,6 +96,12 @@ document.addEventListener('DOMContentLoaded', function() {
     backButton.addEventListener('click', function() {
       window.location.reload();
     });
+  }
+
+  // If mobile, remove the continue button from the DOM.
+  if (isMobile && seg2ContinueButton) {
+    seg2ContinueButton.remove();
+    seg2ContinueButton = null; // Clear reference
   }
 
   // --- SEGMENT 2: Service Selection with Tabs ---
@@ -129,27 +123,42 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         seg2ButtonContainer.classList.add('moved');
       }
-      seg2ContinueButton.classList.add('visible');
-      seg2ContinueButton.classList.remove('enabled');
+      // For desktop, show the continue button (if it exists)
+      if (!isMobile && seg2ContinueButton) {
+        seg2ContinueButton.classList.add('visible');
+        seg2ContinueButton.classList.remove('enabled');
+      }
       document.querySelectorAll(`#seg2Cards-${tab} .seg2-card`).forEach(c => c.classList.remove('selected'));
       selectedSeg2CardTitle = '';
     });
   });
 
+  // Update the seg2 card click listener based on device type.
   document.querySelectorAll('.seg2-card').forEach(cardEl => {
     cardEl.addEventListener('click', function() {
       const container = this.closest('.card-container');
       container.querySelectorAll('.seg2-card').forEach(c => c.classList.remove('selected'));
       this.classList.add('selected');
-      seg2ContinueButton.classList.add('enabled');
       selectedSeg2CardTitle = this.getAttribute('data-title');
+      if (isMobile) {
+        // In mobile mode, immediately open the calendar modal
+        openCalendarModal();
+      } else {
+        // In desktop mode, enable the continue button.
+        if (seg2ContinueButton) {
+          seg2ContinueButton.classList.add('enabled');
+        }
+      }
     });
   });
 
-  seg2ContinueButton.addEventListener('click', function() {
-    if (!this.classList.contains('enabled')) return;
-    openCalendarModal();
-  });
+  // For desktop, set up the click listener on the continue button.
+  if (seg2ContinueButton) {
+    seg2ContinueButton.addEventListener('click', function() {
+      if (!this.classList.contains('enabled')) return;
+      openCalendarModal();
+    });
+  }
 
   // --- Calendar Modal Logic ---
   let calendarModal = null;
