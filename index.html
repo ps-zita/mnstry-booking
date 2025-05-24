@@ -52,158 +52,127 @@
       </div>
       <div id="continueButton" class="continue-button">Continue</div>
     </div>
-    <!-- SEGMENT 2: REWORKED CARDS -->
+    <!-- SEGMENT 2: REWORKED CARDS with new service grouping -->
     <div id="secondaryContent" class="fade">
       <div id="backButton">×</div>
       <div id="seg2RelativeWrap">
         <div id="seg2ButtonContainer">
-          <button class="seg2button active" data-tab="interior">interior</button>
-          <button class="seg2button" data-tab="exterior">exterior</button>
-          <button class="seg2button" data-tab="int-ext">interior &amp; exterior</button>
+          <!-- New seg2 buttons -->
+          <button class="seg2button active" data-tab="Basic">Basic</button>
+          <button class="seg2button" data-tab="Premium">Premium</button>
+          <button class="seg2button" data-tab="Detail">Detail</button>
         </div>
         <div id="seg2CardColumn">
-          <!-- INTERIOR -->
-          <div class="card-container" id="seg2Cards-interior">
-            <div class="seg2-card" data-title="Gold">
+          <!-- BASIC -->
+          <div class="card-container" id="seg2Cards-Basic">
+            <div class="seg2-card" data-title="Basic wash">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Gold</div>
+                <div class="seg2-card-title">Basic wash</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Basic vacuum</li>
-                <li><span class="seg2-emoji tick">✔️</span>Wipe down</li>
-                <li><span class="seg2-emoji cross">✖️</span>Shampoo</li>
-                <li><span class="seg2-emoji cross">✖️</span>Leather care</li>
+                <li><span class="seg2-emoji tick">✔️</span>Exterior wash only</li>
+                <li><span class="seg2-emoji cross">✖️</span>Interior vacuum</li>
+                <li><span class="seg2-emoji tick">✔️</span>Air drying</li>
+                <li><span class="seg2-emoji tick">✔️</span>Wheel cleaning</li>
+                <!-- Removed "Underbody wash" -->
               </ul>
             </div>
-            <div class="seg2-card" data-title="Premium">
+            <div class="seg2-card" data-title="Gold wash">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Premium</div>
+                <div class="seg2-card-title">Gold wash</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
+                <li><span class="seg2-emoji tick">✔️</span>Exterior wash</li>
                 <li><span class="seg2-emoji tick">✔️</span>Basic vacuum</li>
-                <li><span class="seg2-emoji tick">✔️</span>Wipe down</li>
-                <li><span class="seg2-emoji tick">✔️</span>Shampoo</li>
-                <li><span class="seg2-emoji cross">✖️</span>Leather care</li>
-              </ul>
-            </div>
-            <div class="seg2-card" data-title="Detailing">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Detailing</div>
-                <div class="seg2-price"></div>
-              </div>
-              <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Basic vacuum</li>
-                <li><span class="seg2-emoji tick">✔️</span>Wipe down</li>
-                <li><span class="seg2-emoji tick">✔️</span>Shampoo</li>
-                <li><span class="seg2-emoji tick">✔️</span>Leather care</li>
+                <li><span class="seg2-emoji tick">✔️</span>Window cleaning</li>
+                <li><span class="seg2-emoji tick">✔️</span>Tire shine</li>
+                <!-- Removed "Detail polish" -->
               </ul>
             </div>
           </div>
-          <!-- EXTERIOR -->
-          <div class="card-container" id="seg2Cards-exterior">
-            <div class="seg2-card" data-title="Gold">
+          <!-- PREMIUM -->
+          <div class="card-container" id="seg2Cards-Premium">
+            <div class="seg2-card" data-title="Premium interior">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Gold</div>
+                <div class="seg2-card-title">Premium interior</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Hand wash</li>
-                <li><span class="seg2-emoji cross">✖️</span>Wax</li>
-                <li><span class="seg2-emoji cross">✖️</span>Clay bar</li>
-                <li><span class="seg2-emoji cross">✖️</span>Paint correction</li>
-                <li><span class="seg2-emoji cross">✖️</span>Ceramic coating</li>
+                <li><span class="seg2-emoji tick">✔️</span>Deep interior cleaning</li>
+                <li><span class="seg2-emoji cross">✖️</span>Exterior polish</li>
+                <li><span class="seg2-emoji tick">✔️</span>Carpet shampoo</li>
+                <li><span class="seg2-emoji tick">✔️</span>Leather conditioning</li>
+                <!-- Removed "Dashboard detailing" -->
               </ul>
             </div>
-            <div class="seg2-card" data-title="Premium">
+            <div class="seg2-card" data-title="Premium exterior">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Premium</div>
+                <div class="seg2-card-title">Premium exterior</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Hand wash</li>
-                <li><span class="seg2-emoji tick">✔️</span>Wax</li>
-                <li><span class="seg2-emoji tick">✔️</span>Clay bar</li>
-                <li><span class="seg2-emoji cross">✖️</span>Paint correction</li>
-                <li><span class="seg2-emoji cross">✖️</span>Ceramic coating</li>
+                <li><span class="seg2-emoji tick">✔️</span>Professional hand wash</li>
+                <li><span class="seg2-emoji tick">✔️</span>Wax application</li>
+                <li><span class="seg2-emoji tick">✔️</span>Paint sealant</li>
+                <!-- Removed "Trim restoration" -->
+                <li><span class="seg2-emoji tick">✔️</span>Rim cleaning</li>
               </ul>
             </div>
-            <div class="seg2-card" data-title="Detailing">
+            <div class="seg2-card" data-title="Premium max">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Detailing</div>
+                <div class="seg2-card-title">Premium max</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Hand wash</li>
-                <li><span class="seg2-emoji tick">✔️</span>Wax</li>
-                <li><span class="seg2-emoji tick">✔️</span>Clay bar</li>
-                <li><span class="seg2-emoji tick">✔️</span>Paint correction</li>
-                <li><span class="seg2-emoji tick">✔️</span>Ceramic coating</li>
-              </ul>
-            </div>
-            <div class="seg2-card" data-title="Exterior Ceramic">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Exterior Ceramic</div>
-                <div class="seg2-price"></div>
-              </div>
-              <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Hand wash</li>
-                <li><span class="seg2-emoji tick">✔️</span>Wax</li>
-                <li><span class="seg2-emoji tick">✔️</span>Clay bar</li>
-                <li><span class="seg2-emoji tick">✔️</span>Paint correction</li>
-                <li><span class="seg2-emoji tick">✔️</span>Ceramic coating</li>
+                <li><span class="seg2-emoji tick">✔️</span>Full exterior polish</li>
+                <li><span class="seg2-emoji tick">✔️</span>Interior deep clean</li>
+                <li><span class="seg2-emoji tick">✔️</span>Engine bay clean</li>
+                <li><span class="seg2-emoji tick">✔️</span>Glass restoration</li>
+                <!-- Removed "Detail trim polish" -->
               </ul>
             </div>
           </div>
-          <!-- INT & EXT -->
-          <div class="card-container" id="seg2Cards-int-ext">
-            <div class="seg2-card" data-title="Gold">
+          <!-- DETAIL -->
+          <div class="card-container" id="seg2Cards-Detail">
+            <div class="seg2-card" data-title="Interior detail">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Gold</div>
+                <div class="seg2-card-title">Interior detail</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Basic clean</li>
-                <li><span class="seg2-emoji cross">✖️</span>Premium care</li>
-                <li><span class="seg2-emoji cross">✖️</span>Comprehensive detail</li>
-                <li><span class="seg2-emoji cross">✖️</span>Ceramic coating</li>
+                <li><span class="seg2-emoji tick">✔️</span>Deep vacuum</li>
+                <li><span class="seg2-emoji tick">✔️</span>Surface wipe-down</li>
+                <li><span class="seg2-emoji tick">✔️</span>Stain removal</li>
+                <li><span class="seg2-emoji tick">✔️</span>Seat conditioning</li>
+                <!-- Removed "Odor elimination" -->
               </ul>
             </div>
-            <div class="seg2-card" data-title="Premium">
+            <div class="seg2-card" data-title="Exterior detail">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Premium</div>
+                <div class="seg2-card-title">Exterior detail</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Basic clean</li>
-                <li><span class="seg2-emoji tick">✔️</span>Premium care</li>
-                <li><span class="seg2-emoji cross">✖️</span>Comprehensive detail</li>
-                <li><span class="seg2-emoji cross">✖️</span>Ceramic coating</li>
+                <li><span class="seg2-emoji tick">✔️</span>Hand wash &amp; dry</li>
+                <li><span class="seg2-emoji tick">✔️</span>Paint correction</li>
+                <li><span class="seg2-emoji tick">✔️</span>Scratch buffing</li>
+                <!-- Removed "Body work touch-up" -->
+                <li><span class="seg2-emoji tick">✔️</span>Ceramic coating prep</li>
               </ul>
             </div>
-            <div class="seg2-card" data-title="Detailing">
+            <div class="seg2-card" data-title="Full detail">
               <div class="seg2-card-header">
-                <div class="seg2-card-title">Detailing</div>
+                <div class="seg2-card-title">Full detail</div>
                 <div class="seg2-price"></div>
               </div>
               <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Basic clean</li>
-                <li><span class="seg2-emoji tick">✔️</span>Premium care</li>
-                <li><span class="seg2-emoji tick">✔️</span>Comprehensive detail</li>
-                <li><span class="seg2-emoji cross">✖️</span>Ceramic coating</li>
-              </ul>
-            </div>
-            <div class="seg2-card" data-title="Ministry Ceramic">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Ministry Ceramic</div>
-                <div class="seg2-price"></div>
-              </div>
-              <ul class="seg2-feature-list">
-                <li><span class="seg2-emoji tick">✔️</span>Basic clean</li>
-                <li><span class="seg2-emoji tick">✔️</span>Premium care</li>
-                <li><span class="seg2-emoji tick">✔️</span>Comprehensive detail</li>
-                <li><span class="seg2-emoji tick">✔️</span>Ceramic coating</li>
+                <li><span class="seg2-emoji tick">✔️</span>Complete interior clean</li>
+                <li><span class="seg2-emoji tick">✔️</span>Comprehensive exterior wash</li>
+                <li><span class="seg2-emoji tick">✔️</span>Deep stain treatment</li>
+                <!-- Removed "Extended refurbishing" -->
+                <li><span class="seg2-emoji tick">✔️</span>Full wax and seal</li>
               </ul>
             </div>
           </div>

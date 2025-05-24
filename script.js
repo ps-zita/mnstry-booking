@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Global booking and payment-related state.
   let selectedSize = '';
-  let selectedSeg2Tab = 'interior'; // possible values: "interior", "exterior", "int-ext"
+  let selectedSeg2Tab = 'Basic'; // possible values: "Basic", "Premium", "Detail"
   let selectedSeg2CardTitle = '';
   let pendingBookingData = {};
   let seg3Sidebar = null;
@@ -10,74 +10,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Mapping from service names to UUIDs.
   const serviceUUIDMapping = {
-    // Gold services:
-    "Gold wash Small Suv And Wagons": "39c7b9a1-e1c7-48f8-958f-238e3b2cbee6",
-    "Gold wash Sedan and Hatch": "f332b314-4402-4e4d-a3e1-7258119cb1b9",
-    "Gold wash LRG SUV": "91de1406-6b90-402d-8932-124b86a9e4e2",
+    // Basic services:
+    "Basic wash": "uuid-for-basic-wash",      // replace with your actual UUID
+    "Gold wash": "uuid-for-gold-wash",        // replace with your actual UUID
     // Premium services:
-    "Premium Interior Sedan and Hatch": "b7c4edf5-d736-44ca-8714-c0de2a4aa53a",
-    "Premium Interior Small SUV": "54b60514-9521-4395-96ae-712b4585983b",
-    "Premium Interior LRG SUV": "6ecb4ffb-c11c-4825-aedc-f1be2307c4eb",
-    "Premium Exterior Sedan and Hatch": "8cbc24d3-71f3-4f24-abd4-441d3044fb67",
-    "Premium Exterior Small SUV": "9b346d1b-dc25-4c4f-b0ac-42290f152b11",
-    "Premium Exterior LRG SUV": "6ef21931-3949-448f-b010-64e30b2521dc",
-    "Premium Max Sedan and Hatch": "d584bda5-5d06-46ac-bbd0-4cb0071478f6",
-    "Premium Max Small SUV": "59920ac8-f6a3-40b2-9e1f-aab7a665208a",
-    "Premium Max LRG SUV": "1cf616bf-e1bc-47ac-a78c-912900d8a6ff",
-    // Ceramic services:
-    "Ceramic Sedan and Hatch": "074e5115-2aff-4195-a14d-9eeaf0b61bb7",
-    "Ceramic Small SUV": "fff45a67-cb14-4f51-ad63-e4fdf3c15ace",
-    "Ceramic LRG SUV": "208d390b-24a4-48ef-a849-61f1d351f329",
-    // Full detail fallbacks:
-    "FULL DETAIL SEDAN AND HATCH": "22084cc5-5294-42af-95a6-e089f9adf363",
-    "Interior Detail Small Suv": "302b6314-09c9-407a-a069-da370c9ae3a5",
-    "Exterior Detail Sedan and Hatch": "897cadd3-f4c3-4c0e-a746-70600f2886fb",
-    "Interior Detail Sedan and Hatch": "e4f72993-e4b8-4fb3-b518-551596814760",
-    "Interior Detail LRG SUV": "fe71f16c-70c0-42fc-8701-e25dce2b0a8d",
-    "Exterior detail Small SUV": "3e1624c1-b2d5-48f5-9298-faba29215b77"
+    "Premium interior": "b7c4edf5-d736-44ca-8714-c0de2a4aa53a",
+    "Premium exterior": "8cbc24d3-71f3-4f24-abd4-441d3044fb67",
+    "Premium max": "d584bda5-5d06-46ac-bbd0-4cb0071478f6",
+    // Detail services:
+    "Interior detail": "e4f72993-e4b8-4fb3-b518-551596814760",
+    "Exterior detail": "897cadd3-f4c3-4c0e-a746-70600f2886fb",
+    "Full detail": "22084cc5-5294-42af-95a6-e089f9adf363"
   };
 
-  // Function to get the correct service UUID based on selections.
-  // If the constructed service name isn't found (for example, an invalid value like "payment" is provided), it falls back to the default.
-  function getServiceUUID(service, size, type) {
-    let sizeText = '';
-    switch(size) {
-      case 'SMALL':
-        sizeText = type === 'sedan' ? 'Sedan and Hatch' : 'Small Suv And Wagons';
-        break;
-      case 'MEDIUM':
-        sizeText = 'Sedan and Hatch';
-        break;
-      case 'LARGE':
-        sizeText = 'LRG SUV';
-        break;
-      default:
-        sizeText = 'Sedan and Hatch';
+  // getServiceUUID looks up the selected card title.
+  function getServiceUUID(cardTitle, size, group) {
+    let uuid = serviceUUIDMapping[cardTitle];
+    if (!uuid) {
+      console.warn(`Service "${cardTitle}" not found. Defaulting to "Full detail".`);
+      uuid = serviceUUIDMapping["Full detail"];
     }
-    let serviceName = "";
-    if (service === 'Gold') {
-      serviceName = `Gold wash ${sizeText}`;
-      if (size === 'SMALL' && type !== 'sedan') {
-        serviceName = "Gold wash Small Suv And Wagons";
-      }
-    } else if (service === 'Premium') {
-      if (type === 'interior') {
-        serviceName = `Premium Interior ${sizeText}`;
-      } else if (type === 'exterior') {
-        serviceName = `Premium Exterior ${sizeText}`;
-      } else if (type === 'int-ext') {
-        serviceName = `Premium Max ${sizeText}`;
-      }
-    } else if (service === 'Ceramic') {
-      serviceName = `Ceramic ${sizeText}`;
-    }
-    // Check if the computed serviceName exists. If not, fallback.
-    if (!serviceName || !serviceUUIDMapping[serviceName]) {
-      console.warn(`Service "${service}" with size "${size}" and type "${type}" did not match a valid mapping. Falling back to FULL DETAIL SEDAN AND HATCH.`);
-      serviceName = "FULL DETAIL SEDAN AND HATCH";
-    }
-    const uuid = serviceUUIDMapping[serviceName];
-    console.log(`Mapped ${service} + ${size} + ${type} to "${serviceName}" -> ${uuid}`);
+    console.log(`Mapped [${group}] ${cardTitle} (${size}) to UUID: ${uuid}`);
     return uuid;
   }
 
@@ -87,20 +40,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Price configuration and available add-ons.
   const prices = {
-    interior: {
-      SMALL: { Gold: 70, Premium: 110, Detailing: 250 },
-      MEDIUM: { Gold: 75, Premium: 120, Detailing: 270 },
-      LARGE: { Gold: 80, Premium: 130, Detailing: 300 }
+    Basic: {
+      SMALL: { "Basic wash": 50, "Gold wash": 70 },
+      MEDIUM: { "Basic wash": 55, "Gold wash": 75 },
+      LARGE: { "Basic wash": 60, "Gold wash": 80 }
     },
-    exterior: {
-      SMALL: { Gold: 70, Premium: 110, Detailing: 250, "Exterior Ceramic": 999 },
-      MEDIUM: { Gold: 75, Premium: 120, Detailing: 270, "Exterior Ceramic": 999 },
-      LARGE: { Gold: 80, Premium: 130, Detailing: 300, "Exterior Ceramic": 999 }
+    Premium: {
+      SMALL: { "Premium interior": 110, "Premium exterior": 110, "Premium max": 180 },
+      MEDIUM: { "Premium interior": 120, "Premium exterior": 120, "Premium max": 190 },
+      LARGE: { "Premium interior": 130, "Premium exterior": 130, "Premium max": 200 }
     },
-    "int-ext": {
-      SMALL: { Gold: 180, Premium: 180, Detailing: 400, "Ministry Ceramic": 1499 },
-      MEDIUM: { Gold: 190, Premium: 190, Detailing: 420, "Ministry Ceramic": 1499 },
-      LARGE: { Gold: 200, Premium: 200, Detailing: 450, "Ministry Ceramic": 1499 }
+    Detail: {
+      SMALL: { "Interior detail": 250, "Exterior detail": 250, "Full detail": 350 },
+      MEDIUM: { "Interior detail": 270, "Exterior detail": 270, "Full detail": 370 },
+      LARGE: { "Interior detail": 300, "Exterior detail": 300, "Full detail": 420 }
     }
   };
 
@@ -144,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.head.appendChild(inputStyle);
 
   const isMobile = window.innerWidth <= 900;
-  const cards = document.querySelectorAll('.card');
+  const sizeCards = document.querySelectorAll('.card');
   const continueButton = document.getElementById('continueButton');
   const mainContent = document.getElementById('mainContent');
   const secondaryContent = document.getElementById('secondaryContent');
@@ -153,10 +106,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const seg2Buttons = document.querySelectorAll('.seg2button');
   let seg2ContinueButton = document.getElementById('seg2ContinueButton');
 
-  // SEGMENT 1: Vehicle Size Selection
-  cards.forEach(cardEl => {
+  // SEGMENT 1: Vehicle Size Selection.
+  sizeCards.forEach(cardEl => {
     cardEl.addEventListener('click', function() {
-      cards.forEach(c => c.classList.remove('selected'));
+      sizeCards.forEach(c => c.classList.remove('selected'));
       this.classList.add('selected');
       continueButton.classList.add('enabled');
       selectedSize = this.getAttribute('data-size');
@@ -190,21 +143,26 @@ document.addEventListener('DOMContentLoaded', function() {
     seg2ContinueButton = null;
   }
 
-  // SEGMENT 2: Service Selection with Tabs
+  // SEGMENT 2: Service Selection with Tabs.
+  // The seg2 buttons now use "Basic", "Premium", and "Detail".
   seg2Buttons.forEach(button => {
     button.addEventListener('click', function() {
-      const tab = this.getAttribute('data-tab');
+      const tab = this.getAttribute('data-tab'); // "Basic", "Premium", or "Detail"
       selectedSeg2Tab = tab;
       seg2Buttons.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       showTab(tab);
       updateCardPrices();
+      // Revert animation functionality to original classes.
       seg2ButtonContainer.classList.remove('moved', 'moved-up-more', 'moved-interior', 'moved-int-ext');
-      if (tab === "exterior") {
+      if(tab === "Basic") {
+        // Map Basic services to the original "exterior" animation.
         seg2ButtonContainer.classList.add('moved-up-more');
-      } else if (tab === "interior") {
+      } else if(tab === "Premium") {
+        // Map Premium services to the original "interior" animation.
         seg2ButtonContainer.classList.add('moved-interior');
-      } else if (tab === "int-ext") {
+      } else if(tab === "Detail") {
+        // Map Detail services to the original "int-ext" animation.
         seg2ButtonContainer.classList.add('moved-int-ext');
       } else {
         seg2ButtonContainer.classList.add('moved');
@@ -225,10 +183,8 @@ document.addEventListener('DOMContentLoaded', function() {
       selectedSeg2CardTitle = this.getAttribute('data-title');
       if (isMobile) {
         openCalendarModal();
-      } else {
-        if (seg2ContinueButton) {
-          seg2ContinueButton.classList.add('enabled');
-        }
+      } else if (seg2ContinueButton) {
+        seg2ContinueButton.classList.add('enabled');
       }
     });
   });
@@ -329,10 +285,11 @@ document.addEventListener('DOMContentLoaded', function() {
         this.value = minDate.toISOString().slice(0, 10);
       }
       timeSelect.innerHTML = '';
+      // If a specific Ceramic service is selected, show a single option.
       let isCeramic = false;
       if (
-        (selectedSeg2Tab === 'exterior' && selectedSeg2CardTitle === 'Exterior Ceramic') ||
-        (selectedSeg2Tab === 'int-ext' && selectedSeg2CardTitle === 'Ministry Ceramic')
+        (selectedSeg2Tab === 'Premium' && selectedSeg2CardTitle === 'Exterior ceramic') ||
+        (selectedSeg2Tab === 'Detail' && selectedSeg2CardTitle === 'Full detail')
       ) {
         isCeramic = true;
       }
@@ -395,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // SEGMENT 3: Checkout Sidebar
+  // SEGMENT 3: Checkout Sidebar.
   function showSeg3Sidebar({ reserved_on, seg2Tab, seg2Card }) {
     secondaryContent.classList.remove('active');
     setTimeout(() => {
@@ -405,11 +362,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Calculate the base price.
     let basePrice = 0;
-    if (selectedSize && prices[seg2Tab] && prices[seg2Tab][selectedSize] && prices[seg2Tab][selectedSize][seg2Card]) {
-      basePrice = prices[seg2Tab][selectedSize][seg2Card];
+    if (selectedSize && prices[selectedSeg2Tab] && prices[selectedSeg2Tab][selectedSize] && prices[selectedSeg2Tab][selectedSize][seg2Card]) {
+      basePrice = prices[selectedSeg2Tab][selectedSize][seg2Card];
     }
     let selectedAddons = [];
-
     // Calculate total (base + addons + fee) in cents.
     function calculateTotal() {
       let addonTotal = 0;
@@ -422,13 +378,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const feeCents = Math.round(chargeCents * 0.016);
       return chargeCents + feeCents;
     }
-
-    // For full charging, we use the calculated total without reduction.
     function fullCharge() {
       return calculateTotal();
     }
-
-    // Render the sidebar.
     seg3Sidebar = document.createElement('div');
     seg3Sidebar.id = 'seg3Sidebar';
     function renderSidebar() {
@@ -443,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
               <div class="summary-title">Your Selection</div>
               <div class="summary-row"><span><strong>Date &amp; Time:</strong></span><span>${reserved_on}</span></div>
               <div class="summary-row"><span><strong>Package:</strong></span><span>${seg2Card || 'N/A'}</span></div>
-              <div class="summary-row"><span><strong>Service:</strong></span><span>${{ 'interior': 'Interior Only', 'exterior': 'Exterior Only', 'int-ext': 'Interior & Exterior' }[seg2Tab] || 'Unknown'}</span></div>
+              <div class="summary-row"><span><strong>Service:</strong></span><span>${selectedSeg2Tab}</span></div>
               <div class="summary-row"><span><strong>Vehicle Size:</strong></span><span>${selectedSize || 'Not selected'}</span></div>
               <div class="summary-row"><span><strong>Base Price:</strong></span><span>$${basePrice}</span></div>
               <div class="summary-row">
@@ -490,13 +442,11 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             </div>
             <button class="checkout-btn">Confirm &amp; Checkout</button>
-                          &nbsp<br>              &nbsp<br>
-              &nbsp<br>
-              &nbsp<br>              &nbsp<br>              &nbsp<br>
+            <br>&nbsp<br>&nbsp<br>&nbsp<br>
           </div>
       `;
       seg3Sidebar.querySelector('.seg3-x').onclick = function() {
-        // Can implement close behaviour if desired.
+        // Optionally implement close behavior.
       };
       seg3Sidebar.querySelectorAll('.addon-checkbox').forEach(cb => {
         cb.onchange = function() {
@@ -524,7 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
         pendingBookingData.booking_comment = `Car: ${carInput.value.trim()}, Addons: ${addonsComment}`;
         pendingBookingData.customer_first_name = nameInput.value.trim();
         pendingBookingData.customer_phone = phoneInput.value.trim();
-        // Set amount to full computed total.
         pendingBookingData.amount = fullCharge();
         openSquarePaymentModal();
       };
@@ -558,14 +507,15 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function updateCardPrices() {
-    ['interior', 'exterior', 'int-ext'].forEach(tab => {
-      const container = document.getElementById(`seg2Cards-${tab}`);
+    // Iterate over the groups: Basic, Premium, Detail.
+    ['Basic', 'Premium', 'Detail'].forEach(cat => {
+      const container = document.getElementById(`seg2Cards-${cat}`);
       if (!container) return;
       const cards = container.querySelectorAll('.seg2-card');
       cards.forEach(card => {
         const cardTitle = card.getAttribute('data-title');
         const priceDiv = card.querySelector('.seg2-price');
-        let price = prices[tab][selectedSize] && prices[tab][selectedSize][cardTitle];
+        let price = prices[cat] && prices[cat][selectedSize] && prices[cat][selectedSize][cardTitle];
         priceDiv.textContent = typeof price === 'number' ? `$${price}` : '';
       });
     });
@@ -621,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         `;
       document.head.appendChild(modalStyle);
-      // Prevent default closing in test mode.
+      // Prevent modal from closing.
       squareModal.querySelector('.square-backdrop').onclick =
       squareModal.querySelector('.square-close-btn').onclick = function() {
         // Keep modal open.
