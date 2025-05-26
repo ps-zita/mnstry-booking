@@ -370,6 +370,13 @@ body {
   z-index: 10;
 }
 
+/* SEG2 BUTTON CONTAINER */
+/* These styles preserve your original seg2 button container layout.
+   In desktop mode, the container uses absolute positioning at the center.
+   In mobile mode (via the media query below), 
+   it starts fixed at the middle (top: 50% with translate(-50%, -50%)) and then,
+   when the .moved class is applied, animates to top: 10px.
+*/
 #seg2ButtonContainer {
   position: absolute;
   left: 50%;
@@ -383,7 +390,8 @@ body {
   overflow: hidden;
   background: none;
   z-index: 2;
-  transition: top 0.5s cubic-bezier(.56, .07, .58, 1.02), transform 0.5s cubic-bezier(.56, .07, .58, 1.02);
+  transition: top 0.5s cubic-bezier(.56, .07, .58, 1.02),
+              transform 0.5s cubic-bezier(.56, .07, .58, 1.02);
 }
 
 #seg2ButtonContainer.moved-up-more {
@@ -484,18 +492,7 @@ body {
 
 /* NEW MOBILE OVERRIDES for SEGMENT 2 & SEGMENT 3 */
 @media (max-width: 900px) {
-  /* Move seg2 button container to top without animation */
-  #seg2ButtonContainer {
-    position: fixed;
-    top: 10px !important;
-    left: 50%;
-    transform: translateX(-50%);
-    transition: none !important;
-  }
-
-  /* Provide extra blank space above seg2 cards by using padding on their container.
-     The container is still fixed at 80vh to allow overall page scrolling if needed,
-     but individual seg2 cards now size naturally to show all content. */
+  /* Mobile seg2 card container remains unchanged */
   #secondaryContent .card-container {
     flex-direction: column;
     align-items: center;
@@ -510,19 +507,6 @@ body {
   }
   #secondaryContent .card-container::-webkit-scrollbar {
     display: none;
-  }
-
-  /* Adjust seg3Sidebar width in mobile to 100vw */
-  #seg3Sidebar {
-    width: 100vw !important;
-    min-width: 100vw !important;
-    max-width: 100vw !important;
-    border-radius: 0;
-  }
-  #seg3Sidebar .seg3-header,
-  #seg3Sidebar .seg3-content {
-    padding-left: 4vw;
-    padding-right: 4vw;
   }
 
   .card-container {
@@ -541,8 +525,7 @@ body {
     max-width: 250px;
   }
   
-  /* Modified seg2 cards to size naturally to show all content.
-     No internal scrolling is applied to the cards. */
+  /* Modified seg2 cards to size naturally to show all content. */
   #secondaryContent .seg2-card {
     width: 250px;
     min-height: auto;
@@ -550,7 +533,7 @@ body {
     overflow: visible;
   }
   
-  /* New styles for the customer input fields (name, phone number, car make & model) */
+  /* New styles for the customer input fields in seg3 */
   .user-details .input-group {
     margin-bottom: 15px;
   }
@@ -569,7 +552,30 @@ body {
     background-color: #fff;
     color: #333;
   }
-}
+
+  /* Mobile override for seg2 button container:
+     In mobile mode, the default state is at 50% (center of the screen).
+     When the .moved class is added via JavaScript, the container animates to top: 10px.
+  */
+  #seg2ButtonContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  #seg2ButtonContainer.moved-up-more {
+    top: calc(50% - 45%);
+  }
+  #seg2ButtonContainer.moved-interior {
+    top: calc(50% - 45%);
+  }
+  #seg2ButtonContainer.moved-int-ext {
+    top: calc(50% - 45%);
+  }
+  #seg2ButtonContainer.moved {
+    top: calc(50% - 45%);
+  }
+}  
 
 /* Universal styling for the customer details form */
 .user-details {
@@ -599,7 +605,7 @@ body {
   position: fixed;
   top: 0;
   right: 0;
-  width: 33vw;
+  width: 100vw;
   min-width: 320px;
   max-width: 480px;
   height: 100vh;
