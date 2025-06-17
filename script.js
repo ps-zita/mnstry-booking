@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // Mapping from service names to UUIDs.
   const serviceUUIDMapping = {
     // Basic services:
-    "Basic wash": "uuid-for-basic-wash",      // replace with your actual UUID
-    "Gold wash": "uuid-for-gold-wash",        // replace with your actual UUID
+    "Basic wash": "e166ca58-4c85-413b-91d3-26b38e808475",
+    "Gold wash": "f332b314-4402-4e4d-a3e1-7258119cb1b9",
     // Premium services:
     "Premium interior": "b7c4edf5-d736-44ca-8714-c0de2a4aa53a",
     "Premium exterior": "8cbc24d3-71f3-4f24-abd4-441d3044fb67",
