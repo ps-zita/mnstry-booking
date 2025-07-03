@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
   let seg3Sidebar = null;
   let squareModal = null;
   let card; // Square card instance.
+  let bookNowPayLaterClicked = false; // flag for "Book now & Pay later" action
 
-  // Mapping from service names to UUIDs using the new UUIDs.
+  // New UUID mappings using your updated values.
   const serviceUUIDMapping = {
     // Basic services:
     "Basic wash": "578ddbbb-62b7-4061-9fee-f8ccc1c92bf5",
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     "Full detail": "f433b1b6-04ad-420c-be3c-35f768f2be7"
   };
 
-  // getServiceUUID looks up the selected card title.
+  // Retrieve the service UUID.  
   function getServiceUUID(cardTitle, size, group) {
     let uuid = serviceUUIDMapping[cardTitle];
     if (!uuid) {
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { key: "dent", name: "Dent Removal", price: 75 }
   ];
 
-  // Insert CSS for user inputs and labels.
+  // Insert CSS for form inputs.
   const inputStyle = document.createElement('style');
   inputStyle.textContent = `
     #seg3Sidebar .user-details input {
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const seg2Buttons = document.querySelectorAll('.seg2button');
   let seg2ContinueButton = document.getElementById('seg2ContinueButton');
 
-  // SEGMENT 1: Vehicle Size Selection.
+  // SEGMENT 1 - Vehicle Size Selection.
   sizeCards.forEach(cardEl => {
     cardEl.addEventListener('click', function() {
       sizeCards.forEach(c => c.classList.remove('selected'));
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
     seg2ContinueButton = null;
   }
 
-  // SEGMENT 2: Service Selection with Tabs.
+  // SEGMENT 2 - Service Selection Tabs.
   seg2Buttons.forEach(button => {
     button.addEventListener('click', function() {
       const tab = this.getAttribute('data-tab'); // "Basic", "Premium", or "Detail"
@@ -190,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // CALENDAR MODAL
+  // CALENDAR MODAL - Select Date/Time.
   let calendarModal = null;
   function openCalendarModal() {
     if (!calendarModal) {
@@ -346,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // SEGMENT 3: Checkout Sidebar.
+  // SEGMENT 3 - Checkout Sidebar.
   function showSeg3Sidebar({ reserved_on, seg2Tab, seg2Card }) {
     secondaryContent.classList.remove('active');
     setTimeout(() => {
@@ -410,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${addons.map(addon => `
                   <li class="addon-item">
                     <label class="addon-label">
-                      <input type="checkbox" class="addon-checkbox" value="${addon.key}" ${selectedAddons.includes(addon.key) ? "checked" : ""}/>
+                      <input type="checkbox" class="addon-checkbox" value="${addon.key}" ${selectedAddons.includes(addon.key) ? "checked" : ""}>
                       ${addon.name}
                     </label>
                     <span class="addon-price">$${addon.price}</span>
@@ -421,15 +422,15 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="user-details">
               <div class="input-group">
                 <label for="customerName">Name:</label>
-                <input type="text" id="customerName" placeholder="Your Name" required/>
+                <input type="text" id="customerName" placeholder="Your Name" required>
               </div>
               <div class="input-group">
                 <label for="customerPhone">Phone Number:</label>
-                <input type="text" id="customerPhone" placeholder="Your Phone Number" required/>
+                <input type="text" id="customerPhone" placeholder="Your Phone Number" required>
               </div>
               <div class="input-group">
                 <label for="carMakeModel">Car Make and Model?</label>
-                <input type="text" id="carMakeModel" placeholder="MERCEDES SUV" required/>
+                <input type="text" id="carMakeModel" placeholder="MERCEDES SUV" required>
               </div>
             </div>
             <div class="total-section">
@@ -438,12 +439,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span class="total-value">$${(calculateTotal() / 100).toFixed(2)}</span>
               </div>
             </div>
-            <button class="checkout-btn">Confirm &amp; Checkout</button>
-            <br>&nbsp<br>&nbsp<br>&nbsp<br>
+            <div class="checkout-buttons">
+              <button class="checkout-btn">Confirm &amp; Checkout</button>
+              <button class="book-pay-later-btn">Book now &amp; Pay later</button>
+            </div>
+            <br>&nbsp;<br>&nbsp;<br>&nbsp;<br>
           </div>
       `;
       seg3Sidebar.querySelector('.seg3-x').onclick = function() {
-        // Optionally implement close behavior.
+        // Optionally implement close functionality.
       };
       seg3Sidebar.querySelectorAll('.addon-checkbox').forEach(cb => {
         cb.onchange = function() {
@@ -456,7 +460,8 @@ document.addEventListener('DOMContentLoaded', function() {
           renderSidebar();
         };
       });
-      seg3Sidebar.querySelector('.checkout-btn').onclick = function() {
+      // Payment Flow: Confirm & Checkout
+      seg3Sidebar.querySelector('.checkout-btn').onclick = async function() {
         const nameInput = document.getElementById("customerName");
         const phoneInput = document.getElementById("customerPhone");
         const carInput = document.getElementById("carMakeModel");
@@ -472,7 +477,31 @@ document.addEventListener('DOMContentLoaded', function() {
         pendingBookingData.customer_first_name = nameInput.value.trim();
         pendingBookingData.customer_phone = phoneInput.value.trim();
         pendingBookingData.amount = fullCharge();
+        // Open Square Payment Modal to process immediate payment.
         openSquarePaymentModal();
+      };
+      // Book Now & Pay Later Flow: Bypass Payment and finalize booking directly.
+      seg3Sidebar.querySelector('.book-pay-later-btn').onclick = async function() {
+        if (bookNowPayLaterClicked) return; // prevent double-clicking
+        bookNowPayLaterClicked = true;
+        const nameInput = document.getElementById("customerName");
+        const phoneInput = document.getElementById("customerPhone");
+        const carInput = document.getElementById("carMakeModel");
+        if (!nameInput.value.trim() || !phoneInput.value.trim() || !carInput.value.trim()) {
+          alert("Please fill in your name, phone number, and car make/model.");
+          bookNowPayLaterClicked = false;
+          return;
+        }
+        const addonsComment = selectedAddons.map(key => {
+          const addon = addons.find(a => a.key === key);
+          return addon ? addon.name : "";
+        }).filter(name => name).join(", ");
+        pendingBookingData.booking_comment = `Car: ${carInput.value.trim()}, Addons: ${addonsComment}`;
+        pendingBookingData.customer_first_name = nameInput.value.trim();
+        pendingBookingData.customer_phone = phoneInput.value.trim();
+        pendingBookingData.amount = fullCharge();
+        // Finalize booking without processing payment.
+        await finalizeBooking();
       };
     }
     renderSidebar();
@@ -517,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // SQUARE PAYMENT INTEGRATION (from your old code)
+  // SQUARE PAYMENT INTEGRATION.
   async function initializeSquareCard(payments) {
     card = await payments.card();
     await card.attach("#square-card-container");
@@ -567,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         `;
       document.head.appendChild(modalStyle);
-      // Prevent modal from closing.
+      // Prevent modal closing.
       squareModal.querySelector('.square-backdrop').onclick =
       squareModal.querySelector('.square-close-btn').onclick = function() {
         // Keep modal open.
@@ -597,9 +626,14 @@ document.addEventListener('DOMContentLoaded', function() {
           const tokenResult = await card.tokenize(verificationDetails);
           if (tokenResult.status === "OK") {
             const token = tokenResult.token;
-            const paymentSuccessful = await createSquarePayment(token, pendingBookingData.amount);
-            if (paymentSuccessful) {
-              console.log("✅ Payment Successful!");
+            // Call backend /process-payment endpoint.
+            const paymentResponse = await axios.post("https://mnstry.duckdns.org:3001/process-payment", {
+              nonce: token,
+              bookingId: "", // use if needed
+              amount: pendingBookingData.amount
+            });
+            if (paymentResponse.data && paymentResponse.data.success) {
+              console.log("✅ Payment Successful! Transaction ID:", paymentResponse.data.transactionId);
               document.getElementById("square-payment-status").innerText = "✅ Payment Successful!";
               await finalizeBooking();
             } else {
@@ -619,27 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
     squareModal.classList.add("show");
   }
 
-  async function createSquarePayment(token, amount) {
-    try {
-      const paymentResponse = await axios.post("https://connect.squareup.com/v2/payments", {
-        source_id: token,
-        idempotency_key: Date.now().toString(),
-        amount_money: { amount: amount, currency: "AUD" }
-      }, {
-        headers: { 
-          "Authorization": `Bearer EAAAl_aH-FzgdiGtcdmHDToKcHyoYaqShKbTV_WwaaI713SYOcbP_w8r002ih2mP`, 
-          "Content-Type": "application/json" 
-        }
-      });
-      const payment = paymentResponse.data.payment;
-      console.log(`Payment Successful! Transaction ID: ${payment.id}`);
-      return true;
-    } catch (error) {
-      console.error("Payment Failed:", error.response ? error.response.data : error.message);
-      return false;
-    }
-  }
-
   async function finalizeBooking() {
     console.log("Finalizing booking with data:", pendingBookingData);
     try {
@@ -652,9 +665,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const errorText = await response.text();
         console.error("Error response from backend:", errorText);
         const statusEl = document.getElementById("status");
-        if (statusEl) {
-          statusEl.innerText = "Booking failed.";
-        }
+        if (statusEl) statusEl.innerText = "Booking failed.";
         return;
       }
       const result = await response.json();
@@ -671,9 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error("Error creating booking:", error);
       const statusEl = document.getElementById("status");
-      if (statusEl) {
-        statusEl.innerText = "Booking failed.";
-      }
+      if (statusEl) statusEl.innerText = "Booking failed.";
     }
   }
 });
