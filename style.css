@@ -955,3 +955,156 @@ body {
   cursor: pointer;
   color: #444;
 }
+
+/* Styles for the Payment Modal */
+#paymentModal {
+  position: fixed;
+  z-index: 100000;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.payment-backdrop {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.payment-modal-content {
+  position: relative;
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  min-width: 400px;
+  max-width: 500px;
+  width: 90%;
+  z-index: 100001;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+}
+
+.payment-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.payment-close-btn {
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.3s;
+}
+
+.payment-close-btn:hover {
+  color: #333;
+}
+
+#paymentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#paymentForm .input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#paymentForm .input-row {
+  display: flex;
+  gap: 15px;
+}
+
+#paymentForm .input-row .input-group {
+  flex: 1;
+}
+
+#paymentForm label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+#paymentForm input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#paymentForm input:focus {
+  outline: none;
+  border-color: #00688b;
+  box-shadow: 0 0 0 2px rgba(0, 104, 139, 0.2);
+}
+
+.payment-confirm-btn {
+  background: linear-gradient(90deg, #ffe066 0%, #ffe799 100%);
+  color: #254160;
+  border: none;
+  border-radius: 8px;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 10px;
+  box-shadow: 0 2px 10px rgba(255, 224, 102, 0.3);
+}
+
+.payment-confirm-btn:hover {
+  background: linear-gradient(90deg, #ffe799 0%, #ffe066 100%);
+  transform: translateY(-1px);
+}
+
+.payment-confirm-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#payment-status {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+  min-height: 20px;
+}
+
+#payment-status:not(:empty) {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+/* Mobile responsive styles for payment modal */
+@media (max-width: 600px) {
+  .payment-modal-content {
+    min-width: 90%;
+    margin: 20px;
+    padding: 20px;
+  }
+  
+  #paymentForm .input-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
