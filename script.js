@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
   let selectedSeg2CardTitle = '';
   let pendingBookingData = {};
   let seg3Sidebar = null;
-  let paymentModal = null;
+  let squareModal = null;
+  let card; // Square card instance.
   let bookNowPayLaterClicked = false; // flag for "Book now & Pay later" button
 
   // Mapping from service names to UUIDs.
@@ -29,6 +30,10 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log(`Mapped [${group}] ${cardTitle} (${size}) to UUID: ${uuid}`);
     return uuid;
   }
+
+  // Square configuration parameters.
+  const appId = "sq0idp-2UIVBa7RW5RhNJbPp5VAOg";
+  const locationId = "FK7Q4N5CDQQH5";
 
   // New Price configuration and available add-ons.
   // Basic: SMALL: Basic wash: $25, Gold wash: $70
@@ -439,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
         pendingBookingData.customer_first_name = nameInput.value.trim();
         pendingBookingData.customer_phone = phoneInput.value.trim();
         pendingBookingData.amount = fullCharge();
-        openPaymentModal();
+        openSquarePaymentModal();
       };
 
       // Book now & Pay later: bypasses payment and finalizes booking; can only be pressed once.
@@ -510,135 +515,103 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // PAYMENT MODAL
-  function openPaymentModal() {
-    if (!paymentModal) {
-      paymentModal = document.createElement('div');
-      paymentModal.id = 'paymentModal';
-      paymentModal.innerHTML = `
-        <div class="payment-backdrop"></div>
-        <div class="payment-modal-content">
-          <div class="payment-modal-header">
-            <span>Enter Payment Details</span>
-            <span class="payment-close-btn" tabindex="0">&times;</span>
-          </div>
-          <form id="paymentForm">
-            <div class="input-group">
-              <label for="cardNumber">Card Number:</label>
-              <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required maxlength="19">
-            </div>
-            <div class="input-row">
-              <div class="input-group">
-                <label for="expiryDate">Expiry Date:</label>
-                <input type="text" id="expiryDate" placeholder="MM/YY" required maxlength="5">
-              </div>
-              <div class="input-group">
-                <label for="cvv">CVV:</label>
-                <input type="text" id="cvv" placeholder="123" required maxlength="4">
-              </div>
-            </div>
-            <div class="input-group">
-              <label for="cardholderName">Cardholder Name:</label>
-              <input type="text" id="cardholderName" placeholder="John Doe" required>
-            </div>
-            <button type="submit" class="payment-confirm-btn">Pay Now</button>
-          </form>
-          <p id="payment-status"></p>
-        </div>
-      `;
-      document.body.appendChild(paymentModal);
-      
-      // Close modal handlers
-      paymentModal.querySelector('.payment-close-btn').onclick = closePaymentModal;
-      paymentModal.querySelector('.payment-backdrop').onclick = closePaymentModal;
-      
-      // Card number formatting
-      const cardNumberInput = paymentModal.querySelector('#cardNumber');
-      cardNumberInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\s/g, '');
-        value = value.replace(/\D/g, '');
-        value = value.replace(/(\d{4})/g, '$1 ').trim();
-        e.target.value = value;
-      });
-      
-      // Expiry date formatting
-      const expiryInput = paymentModal.querySelector('#expiryDate');
-      expiryInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        if (value.length >= 2) {
-          value = value.substring(0, 2) + '/' + value.substring(2, 4);
-        }
-        e.target.value = value;
-      });
-      
-      // CVV formatting
-      const cvvInput = paymentModal.querySelector('#cvv');
-      cvvInput.addEventListener('input', function(e) {
-        e.target.value = e.target.value.replace(/\D/g, '');
-      });
-      
-      // Form submission
-      const form = paymentModal.querySelector('#paymentForm');
-      form.onsubmit = async function(e) {
-        e.preventDefault();
-        const statusEl = paymentModal.querySelector('#payment-status');
-        statusEl.textContent = 'Processing payment...';
-        
-        const cardNumber = cardNumberInput.value.replace(/\s/g, '');
-        const expiryDate = expiryInput.value;
-        const cvv = cvvInput.value;
-        const cardholderName = paymentModal.querySelector('#cardholderName').value;
-        
-        if (!cardNumber || !expiryDate || !cvv || !cardholderName) {
-          statusEl.textContent = 'Please fill in all fields.';
-          return;
-        }
-        
-        // Create a nonce (simplified - in production you'd use a proper payment processor)
-        const nonce = btoa(JSON.stringify({
-          cardNumber: cardNumber,
-          expiryDate: expiryDate,
-          cvv: cvv,
-          cardholderName: cardholderName
-        }));
-        
-        try {
-          const response = await fetch('https://mnstry.duckdns.org:3001/process-payment', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              nonce: nonce,
-              amount: pendingBookingData.amount,
-              bookingId: Date.now().toString()
-            })
-          });
-          
-          const result = await response.json();
-          
-          if (result.success) {
-            statusEl.textContent = '✅ Payment Successful!';
-            setTimeout(() => {
-              closePaymentModal();
-              finalizeBooking();
-            }, 1500);
-          } else {
-            statusEl.textContent = '❌ Payment Failed: ' + (result.error || 'Unknown error');
-          }
-        } catch (error) {
-          console.error('Payment error:', error);
-          statusEl.textContent = '❌ Payment Error: ' + error.message;
-        }
-      };
-    }
-    
-    paymentModal.style.display = 'flex';
+  async function initializeSquareCard(payments) {
+    card = await payments.card();
+    await card.attach("#square-card-container");
   }
 
-  function closePaymentModal() {
-    if (paymentModal) {
-      paymentModal.style.display = 'none';
+  async function openSquarePaymentModal() {
+    if (!squareModal) {
+      squareModal = document.createElement('div');
+      squareModal.id = 'squareModal';
+      squareModal.innerHTML = `
+        <div class="square-backdrop"></div>
+        <div class="square-modal-content">
+          <div class="square-modal-header">
+            <span>Enter Card Details</span>
+            <span class="square-close-btn" tabindex="0">&times;</span>
+          </div>
+          <div id="square-card-container"></div>
+          <button id="square-card-button">Pay Now</button>
+          <p id="square-payment-status"></p>
+        </div>
+      `;
+      document.body.appendChild(squareModal);
+      squareModal.querySelector('.square-backdrop').onclick =
+      squareModal.querySelector('.square-close-btn').onclick = () => { /* Keep modal open */ };
+      const payments = Square.payments(appId, locationId);
+      await initializeSquareCard(payments);
+      document.getElementById("square-card-button").addEventListener("click", async function () {
+        console.log(`Charging $${(pendingBookingData.amount / 100).toFixed(2)}`);
+        try {
+          const verificationDetails = {
+            amount: (pendingBookingData.amount / 100).toFixed(2),
+            billingContact: {
+              givenName: 'Test',
+              familyName: 'User',
+              email: 'test@example.com',
+              phone: '0000000000',
+              addressLines: ['123 Test St'],
+              city: 'Test City',
+              state: 'TS',
+              countryCode: 'AU'
+            },
+            currencyCode: 'AUD',
+            intent: 'CHARGE',
+            customerInitiated: true,
+            sellerKeyedIn: false
+          };
+          const tokenResult = await card.tokenize(verificationDetails);
+          if (tokenResult.status === "OK") {
+            const token = tokenResult.token;
+            const paymentSuccessful = await createSquarePayment(token, pendingBookingData.amount);
+            if (paymentSuccessful) {
+              console.log("✅ Payment Successful!");
+              document.getElementById("square-payment-status").innerText = "✅ Payment Successful!";
+              await finalizeBooking();
+            } else {
+              console.error("Payment declined. Booking will not be sent.");
+              document.getElementById("square-payment-status").innerText = "❌ Payment Declined.";
+            }
+          } else {
+            console.error("Tokenization failed with status:", tokenResult.status);
+            document.getElementById("square-payment-status").innerText = "❌ Card Validation Failed!";
+          }
+        } catch (error) {
+          console.error("Payment Error:", error);
+          document.getElementById("square-payment-status").innerText = "❌ Payment Error.";
+        }
+      });
+    }
+    squareModal.classList.add("show");
+  }
+
+  async function createSquarePayment(token, amount) {
+    try {
+      const response = await fetch('https://mnstry.duckdns.org:3001/process-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          nonce: token,
+          amount: amount,
+          bookingId: Date.now().toString()
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log(`Payment Successful! Transaction ID: ${result.transactionId}`);
+        return true;
+      } else {
+        console.error("Payment Failed:", result.error);
+        return false;
+      }
+    } catch (error) {
+      console.error("Payment Failed:", error);
+      return false;
     }
   }
 
