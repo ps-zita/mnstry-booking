@@ -746,4 +746,56 @@ document.addEventListener('DOMContentLoaded', function() {
       alert("Booking failed due to a network error.");
     }
   }
+
+  // Booking modal integration — safe when some elements removed
+  (function(){
+    const modal = document.getElementById('bookingModal');
+    if(!modal) return;
+
+    const overlay = document.getElementById('bmOverlay');
+    const closeBtn = document.getElementById('bmClose');
+    const closePrimary = document.getElementById('bmClosePrimary');
+
+    function populate(details = {}) {
+      // expected shape: { guest, checkIn, checkOut, total, status, subtext }
+      const guestEl = document.getElementById('bmGuest');
+      const checkInEl = document.getElementById('bmCheckIn');
+      const checkOutEl = document.getElementById('bmCheckOut');
+      const totalEl = document.getElementById('bmTotal');
+      const statusEl = document.getElementById('bmStatus');
+      const subEl = document.getElementById('bm-sub');
+
+      if (guestEl) guestEl.textContent = details.guest || guestEl.textContent || '—';
+      if (checkInEl) checkInEl.textContent = details.checkIn || checkInEl.textContent || '—';
+      if (checkOutEl) checkOutEl.textContent = details.checkOut || checkOutEl.textContent || '—';
+      if (totalEl) totalEl.textContent = details.total || totalEl.textContent || '—';
+      if (statusEl) statusEl.textContent = details.status || statusEl.textContent || 'Confirmed';
+      if (subEl) subEl.textContent = details.subtext || 'We’ve sent a confirmation to your number. If you need to make changes, contact support below.';
+    }
+
+    function show(details){
+      populate(details);
+      modal.setAttribute('aria-hidden', 'false');
+      modal.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+      // focus the primary close button for accessibility
+      (closePrimary || closeBtn)?.focus();
+    }
+
+    function hide(){
+      modal.setAttribute('aria-hidden', 'true');
+      modal.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    overlay?.addEventListener('click', hide);
+    closeBtn?.addEventListener('click', hide);
+    closePrimary?.addEventListener('click', hide);
+    document.addEventListener('keydown', (e) => { if(e.key === 'Escape') hide(); });
+
+    // Expose functions and listen for event
+    window.showBookingModal = show;
+    window.hideBookingModal = hide;
+    document.addEventListener('booking:complete', (e) => { show(e.detail || {}); });
+  })();
 });
