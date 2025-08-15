@@ -646,9 +646,9 @@ document.addEventListener('DOMContentLoaded', function() {
       const response = await fetch("https://mnstry.duckdns.org:3001/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(pendingBookingData),
-        mode: "cors",           // explicit, helps in some environments
-        credentials: "include"  // include cookies if the endpoint requires auth
+        body: JSON.stringify(pendingBookingData)
+        // The 'credentials' and 'mode' properties have been removed.
+        // This prevents the strict CORS error when the server sends a wildcard origin.
       });
 
       if (!response.ok) {
