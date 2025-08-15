@@ -1116,145 +1116,117 @@ body {
   background: transparent;
   -webkit-tap-highlight-color: transparent;
 }
-#bookingModal.visible {
+
+/* ---------- Improved Booking Modal UI ---------- */
+/* Show when .visible OR aria-hidden="false" (script toggles visible + aria) */
+#bookingModal.visible,
+#bookingModal[aria-hidden="false"] {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* overlay element inside the modal (covers the page, sits under the panel) */
+/* Base container / overlay */
+#bookingModal {
+  position: fixed;
+  inset: 0;
+  display: none; /* toggled via .visible or aria-hidden */
+  z-index: 120000;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* dark translucent backdrop with slight blur */
 #bookingModal .bm-overlay,
 #bookingModal #bmOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(2px);
+  background: rgba(6, 12, 18, 0.6);
+  backdrop-filter: blur(3px) saturate(110%);
   z-index: 120000;
+  pointer-events: auto;
 }
 
-/* panel sits above the overlay */
+/* Centered panel above overlay */
 #bookingModal .bm-panel {
   position: relative;
   z-index: 120001;
-  background: linear-gradient(180deg,#ffffff 0%, #f6f8fb 100%);
-  max-width: 980px;
-  width: min(92%, 980px);
-  border-radius: 12px;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.4);
-  overflow: hidden;
-  transform: translateY(0);
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  margin: 0 16px; /* ensure some side gap on very small screens */
-}
-
-/* panel content */
-#bookingModal .bm-body {
-  display:flex;
-  gap:18px;
-  align-items:flex-start;
-  padding: 22px 28px;
+  width: min(92%, 760px);
+  max-height: 88vh;
+  overflow: auto;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(246,249,253,1));
+  box-shadow: 0 30px 60px rgba(2,6,23,0.6);
+  padding: 16px;
   box-sizing: border-box;
-  min-height: 120px;
+  transition: transform 220ms ease, opacity 180ms ease;
+  transform: translateY(0);
+  margin: 24px;
 }
 
-/* badge / check */
-.bm-badge {
-  width:92px;
-  height:92px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: linear-gradient(135deg, rgba(22,163,74,0.12), rgba(15,99,214,0.08));
-  border:1px solid rgba(15,99,214,0.06);
-  flex-shrink:0;
+/* layout inside panel */
+#bookingModal .bm-body {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 18px;
 }
+
+/* badge/check */
+.bm-badge { flex: 0 0 88px; display:flex; align-items:center; justify-content:center; }
 .bm-check {
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  background:var(--success, #16a34a);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-weight:700;
-  font-size:28px;
-  box-shadow:0 10px 30px rgba(16,185,129,0.12);
+  width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--success,#16a34a); color:#fff; font-weight:700; font-size:28px;
+  box-shadow: 0 8px 24px rgba(16,185,129,0.14);
 }
 
-/* close button (top-right) - relative to panel */
-.bm-close {
-  position:absolute;
-  right:12px;
-  top:12px;
-  background:rgba(255,255,255,0.9);
-  border:0;
-  font-size:22px;
-  line-height:1;
-  cursor:pointer;
-  color:#0b1220;
-  border-radius:6px;
-  padding:2px 6px;
-  z-index:120002;
-}
-
-/* basic typography inside modal */
+/* content area */
 #bookingModal .bm-content { flex:1; min-width:0; }
-#bookingModal h2 { margin:0 0 6px 0; font-size:20px; color:#0b1220; }
-#bookingModal .bm-sub { margin:0 0 12px 0; color:var(--muted, #6b7280); }
+#bookingModal h2 { margin:0 0 8px 0; font-size:1.25rem; color:#0b1220; font-weight:700; }
+#bookingModal .bm-sub { margin:0 0 14px 0; color:var(--muted,#6b7280); line-height:1.4; }
 
-/* muted / small */
-.muted { color: var(--muted, #6b7280); font-size:13px; }
-
-/* details */
-#bookingModal .bm-grid {
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-#bookingModal .detail { background: rgba(11,17,24,0.02); padding:12px; border-radius:10px; box-sizing:border-box; flex:1 1 45%; min-width:140px; }
-.k { font-size:12px; color:var(--muted, #6b7280); margin-bottom:6px; }
+/* info grid */
+#bookingModal .bm-grid { display:flex; gap:12px; flex-wrap:wrap; margin-top:6px; }
+#bookingModal .detail { flex:1 1 45%; min-width:140px; background: rgba(11,17,24,0.03); padding:10px 12px; border-radius:10px; }
+.k { font-size:0.82rem; color:var(--muted,#6b7280); margin-bottom:6px; }
 .v { font-weight:700; color:#0b1220; }
 
-/* actions / buttons */
-#bookingModal .bm-actions {
-  display:flex;
-  gap:10px;
-  justify-content:flex-end;
-  margin-top:16px;
-  flex-wrap:wrap;
-  width:100%;
-}
-.btn {
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  padding:10px 14px;
-  border-radius:10px;
-  border:0;
-  font-weight:600;
-  cursor:pointer;
-  text-decoration:none;
-}
-.btn-primary {
-  background: linear-gradient(180deg, var(--accent, #0f63d6), #0747a6);
-  color: #fff;
-  box-shadow: 0 8px 20px rgba(11,99,214,0.12);
-}
-.btn-ghost {
-  background: transparent;
-  border: 1px solid rgba(15,99,214,0.12);
-  color: var(--accent, #0f63d6);
+/* status block aligned top-right inside info area */
+#bookingModal .bm-info { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+
+/* actions row */
+#bookingModal .bm-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:14px; width:100%; }
+#bookingModal .bm-actions .btn { padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer; border:0; }
+#bookingModal .bm-actions .btn-primary { background: linear-gradient(180deg,var(--accent,#0f63d6),#0747a6); color:#fff; box-shadow:0 8px 20px rgba(11,99,214,0.12); }
+
+/* close button: small pill in panel corner for better visibility */
+.bm-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255,255,255,0.9);
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 9px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index:120002;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.12);
 }
 
-/* ensure modal fits on small screens */
+/* responsive: stack and full-width actions on small screens */
 @media (max-width: 720px) {
-  #bookingModal .bm-body { flex-direction: column; padding:16px; }
+  #bookingModal .bm-panel { width: calc(100% - 32px); padding: 12px; margin: 12px; }
+  #bookingModal .bm-body { flex-direction: column; padding: 12px; gap: 12px; }
   .bm-badge { margin: 0 auto; }
-  #bookingModal .bm-actions { display:flex; flex-direction:column; gap:8px; width:100%; }
-  .btn { width:100%; justify-content:center; }
   #bookingModal .bm-grid { flex-direction: column; }
-  #bookingModal .detail { flex: 1 1 auto; width:100%; }
+  #bookingModal .detail { width: 100%; }
+  #bookingModal .bm-actions { flex-direction: column-reverse; align-items: stretch; }
+  #bookingModal .bm-actions .btn { width: 100%; }
 }
+
+/* small polish */
+#bookingModal .detail + .detail { margin-top: 0; }
+#bookingModal .bm-content p { margin: 0; }
+
+/* ensure other modals keep precedence */
+#bookingModal, #bookingModal * { box-sizing: border-box; }
