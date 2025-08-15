@@ -155,5 +155,64 @@
     </div>
     <!-- The Square Payment modal will be dynamically created -->
     <script src="script.js"></script>
+
+    <!-- Booking complete modal -->
+    <div id="bookingModal" class="booking-modal" aria-hidden="true" role="dialog" aria-labelledby="bm-heading">
+      <div class="bm-overlay" id="bmOverlay" tabindex="-1"></div>
+
+      <div class="bm-panel" role="document" aria-modal="true" aria-describedby="bm-sub">
+        <button class="bm-close" id="bmClose" aria-label="Close">&times;</button>
+
+        <div class="bm-body">
+          <div class="bm-badge" aria-hidden="true">
+            <div class="bm-check">✓</div>
+          </div>
+
+          <div class="bm-content">
+            <h2 id="bm-heading">Thank you — your booking is confirmed</h2>
+            <p class="bm-sub" id="bm-sub">We’ve sent a confirmation to your email. If you need to make changes, contact support below.</p>
+
+            <div class="bm-info" aria-live="polite">
+              <div>
+                <div class="muted">Booking reference</div>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+                  <div id="bmRef" class="ref">BK-<span id="bmRefVal">A1B2C3D4</span></div>
+                  <button class="btn btn-plain" id="bmCopy" title="Copy booking reference">Copy</button>
+                </div>
+              </div>
+              <div style="margin-left:auto;text-align:right">
+                <div class="muted">Status</div>
+                <div style="font-weight:700;color:var(--success);margin-top:6px" id="bmStatus">Confirmed</div>
+              </div>
+            </div>
+
+            <div class="bm-grid" style="margin-top:18px">
+              <div class="detail">
+                <div class="k">Guest</div>
+                <div class="v" id="bmGuest">John Doe</div>
+              </div>
+              <div class="detail">
+                <div class="k">Check-in</div>
+                <div class="v" id="bmCheckIn">Mon, 21 Apr 2025 • 15:00</div>
+              </div>
+              <div class="detail">
+                <div class="k">Check-out</div>
+                <div class="v" id="bmCheckOut">Thu, 24 Apr 2025 • 11:00</div>
+              </div>
+              <div class="detail">
+                <div class="k">Total paid</div>
+                <div class="v" id="bmTotal">USD 420.00</div>
+              </div>
+            </div>
+
+            <div class="bm-actions">
+              <a class="btn btn-primary" id="bmView" href="#">View booking</a>
+              <a class="btn btn-ghost" id="bmDownload" href="#">Download receipt</a>
+              <a class="btn" style="color:var(--muted)" id="bmContact" href="mailto:support@example.com">Contact support</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

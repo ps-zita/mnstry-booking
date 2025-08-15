@@ -1103,16 +1103,93 @@ body {
   border: 1px solid #dee2e6;
 }
 
-/* Mobile responsive styles for payment modal */
-@media (max-width: 600px) {
-  .payment-modal-content {
-    min-width: 90%;
-    margin: 20px;
-    padding: 20px;
+/* Responsive Booking Modal styles for #bookingModal (populated by [`finalizeBooking`](script.js)) */
+#bookingModal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 120000;
+  background: rgba(0,0,0,0.45);
+}
+#bookingModal.visible {
+  display: flex;
+}
+#bookingModal .bm-panel {
+  background: linear-gradient(180deg,#ffffff 0%, #f6f8fb 100%);
+  max-width: 980px;
+  width: min(92%, 980px);
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+  overflow: hidden;
+  transform: translateY(0);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+#bookingModal .bm-body {
+  padding: 22px 28px;
+}
+#bookingModal .bm-content {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  width: 100%;
+}
+#bookingModal .bm-info {
+  flex: 1 1 40%;
+}
+#bookingModal .bm-grid {
+  flex: 1 1 60%;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#bookingModal .detail {
+  flex: 1 1 45%;
+  min-width: 160px;
+  background: rgba(0,0,0,0.03);
+  padding: 10px;
+  border-radius: 8px;
+}
+#bookingModal .k {
+  font-size: 0.82rem;
+  color: #556;
+}
+#bookingModal .v {
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+/* Actions */
+#bookingModal .bm-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* Small screens: stack content and make modal full-width */
+@media (max-width: 720px) {
+  #bookingModal .bm-panel {
+    width: calc(100% - 24px);
+    border-radius: 10px;
+    max-height: 95vh;
   }
-  
-  #paymentForm .input-row {
+  #bookingModal .bm-content {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+  }
+  #bookingModal .bm-grid {
+    flex-direction: column;
+  }
+  #bookingModal .detail {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  #bookingModal .bm-actions {
+    justify-content: stretch;
   }
 }
