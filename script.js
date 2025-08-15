@@ -615,135 +615,109 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // Robust formatter for a variety of date inputs
+  function formatDateTime(input) {
+    if (!input && input !== 0) return '';
+    // Date instance
+    if (input instanceof Date && !isNaN(input)) {
+      return input.toLocaleString(undefined, {
+        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+    const s = String(input).trim();
+    // numeric (unix seconds or ms)
+    if (/^\d+$/.test(s)) {
+      let n = Number(s);
+      if (s.length === 10) n *= 1000; // seconds -> ms
+      const d = new Date(n);
+      if (!isNaN(d)) return formatDateTime(d);
+    }
+    // try ISO parse or other parseable string
+    const d = new Date(s);
+    if (!isNaN(d)) return formatDateTime(d);
+    // fallback: return original string
+    return s;
+  }
+
   async function finalizeBooking() {
     console.log("Finalizing booking with data:", pendingBookingData);
     try {
       const response = await fetch("https://mnstry.duckdns.org:3001/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(pendingBookingData)
+        body: JSON.stringify(pendingBookingData),
+        mode: "cors",           // explicit, helps in some environments
+        credentials: "include"  // include cookies if the endpoint requires auth
       });
+
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error response from backend:", errorText);
-        const statusEl = document.getElementById("status");
-        if (statusEl) statusEl.innerText = "Booking failed.";
-        alert("Booking failed. Please try again.");
+        const errText = await response.text().catch(()=>'<no body>');
+        console.error("Error response from backend:", response.status, errText);
+        alert("Booking failed. See console for details.");
         return;
       }
+
       const result = await response.json();
       console.log("Booking result from backend:", result);
 
-      // Build readable values for the booking modal
-      const bookingRef = result.booking_ref || `BK-${Math.random().toString(36).substr(2,8).toUpperCase()}`;
-      const guestName = pendingBookingData.customer_first_name || "Guest";
-      const reservedISO = pendingBookingData.reserved_on || "";
-      let checkIn = reservedISO;
-      try {
-        if (reservedISO) {
-          const d = new Date(reservedISO);
-          checkIn = d.toLocaleString(undefined, {
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit"
-          });
-        }
-      } catch (e) {
-        // fallback: keep ISO
-      }
-      const totalPaid = pendingBookingData.amount ? `$${(pendingBookingData.amount / 100).toFixed(2)}` : "TBD";
-      const statusText = result.status || "Confirmed";
+      // extract possible fields (be tolerant to different shapes)
+      const checkInRaw = pendingBookingData.check_in || pendingBookingData.reserved_on || result.check_in || result.start;
+      const checkOutRaw = pendingBookingData.check_out || pendingBookingData.reserved_until || result.check_out || result.end;
 
-      // Populate modal fields (ids live in [index.html](index.html))
-      const bmRefVal = document.getElementById("bmRefVal");
+      const checkIn = formatDateTime(checkInRaw) || '—';
+      const checkOut = formatDateTime(checkOutRaw) || '—';
+
+      const bookingRef = result.booking_ref || `BK-${Math.random().toString(36).substr(2,8).toUpperCase()}`;
+      const guestName = pendingBookingData.customer_first_name || pendingBookingData.guest_name || pendingBookingData.name || 'Guest';
+      const totalPaid = (typeof pendingBookingData.amount === 'number')
+        ? `$${(pendingBookingData.amount / 100).toFixed(2)}`
+        : (pendingBookingData.total || result.total || 'TBD');
+      const statusText = result.status || 'Confirmed';
+
+      // populate modal fields safely
       const bmGuest = document.getElementById("bmGuest");
       const bmCheckIn = document.getElementById("bmCheckIn");
+      const bmCheckOut = document.getElementById("bmCheckOut");
       const bmTotal = document.getElementById("bmTotal");
       const bmStatus = document.getElementById("bmStatus");
+      const bmSub = document.getElementById("bm-sub");
 
-      if (bmRefVal) bmRefVal.innerText = bookingRef.replace(/^BK-?/, "");
-      if (bmGuest) bmGuest.innerText = guestName;
-      if (bmCheckIn) bmCheckIn.innerText = checkIn;
-      if (bmTotal) bmTotal.innerText = totalPaid;
+      if (bmGuest) bmGuest.textContent = guestName;
+      if (bmCheckIn) bmCheckIn.textContent = checkIn;
+      if (bmCheckOut) bmCheckOut.textContent = checkOut;
+      if (bmTotal) bmTotal.textContent = totalPaid;
       if (bmStatus) {
-        bmStatus.innerText = statusText;
-        // ensure CSS variable --success exists or fallback color
-        bmStatus.style.color = statusText.toLowerCase() === "confirmed" ? "var(--success, #25d366)" : "#ffe066";
+        bmStatus.textContent = statusText;
+        bmStatus.style.color = statusText.toLowerCase() === 'confirmed' ? 'var(--success,#16a34a)' : '#d97706';
       }
+      if (bmSub) bmSub.textContent = 'We’ve sent a confirmation to your number. If you need to make changes, contact support below.';
 
-      // Show modal
+      // show modal (script already expects .visible + aria-hidden toggle)
       const bookingModal = document.getElementById("bookingModal");
       if (bookingModal) {
         bookingModal.setAttribute("aria-hidden", "false");
         bookingModal.classList.add("visible");
-        // focus trap-ish: focus close button
-        const closeBtn = document.getElementById("bmClose");
-        if (closeBtn) closeBtn.focus();
+        document.body.style.overflow = "hidden";
+        (document.getElementById("bmClosePrimary") || document.getElementById("bmClose") )?.focus();
       }
 
-      // Wire up copy/download/view behaviors
-      const copyBtn = document.getElementById("bmCopy");
-      if (copyBtn) {
-        copyBtn.onclick = async () => {
-          try {
-            await navigator.clipboard.writeText(bookingRef);
-            copyBtn.innerText = "Copied";
-            setTimeout(() => (copyBtn.innerText = "Copy"), 1500);
-          } catch (err) {
-            alert("Unable to copy booking reference.");
-          }
-        };
-      }
-      const closeBtn = document.getElementById("bmClose");
-      if (closeBtn) {
-        closeBtn.onclick = () => {
-          bookingModal.setAttribute("aria-hidden", "true");
-          bookingModal.classList.remove("visible");
-        };
-      }
-
-      const downloadBtn = document.getElementById("bmDownload");
-      if (downloadBtn) {
-        downloadBtn.onclick = (e) => {
-          e.preventDefault();
-          const text = `Booking Ref: ${bookingRef}\nGuest: ${guestName}\nCheck-in: ${checkIn}\nTotal paid: ${totalPaid}`;
-          const blob = new Blob([text], { type: "text/plain" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `${bookingRef}-receipt.txt`;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          URL.revokeObjectURL(url);
-        };
-      }
-
-      const viewBtn = document.getElementById("bmView");
-      if (viewBtn) {
-        viewBtn.onclick = (e) => {
-          // if backend returned a booking URL use it, otherwise open a simple summary
-          if (result.view_url) {
-            window.open(result.view_url, "_blank");
-          } else {
-            e.preventDefault();
-            alert(`Booking ${bookingRef}\nGuest: ${guestName}\nCheck-in: ${checkIn}\nTotal: ${totalPaid}`);
-          }
-        };
-      }
-
-      // OPTIONAL: do not auto-redirect anymore; user sees modal and can act
-      // If you still want to redirect to a success page, uncomment below:
-      // window.location.href = "booking-success.html";
+      // wire minimal actions (Done closes)
+      document.getElementById("bmClosePrimary")?.addEventListener("click", () => {
+        bookingModal?.setAttribute("aria-hidden", "true");
+        bookingModal?.classList.remove("visible");
+        document.body.style.overflow = "";
+      });
 
     } catch (error) {
       console.error("Error creating booking:", error);
-      const statusEl = document.getElementById("status");
-      if (statusEl) statusEl.innerText = "Booking failed.";
-      alert("Booking failed due to a network error.");
+      // Chromium often throws TypeError "Failed to fetch" for CORS / mixed-content / TLS issues
+      if (error instanceof TypeError && /failed to fetch/i.test(error.message)) {
+        alert("Network error (failed to fetch). Check devtools Console/Network for CORS or TLS/mixed-content issues. Firefox may be more permissive than Chromium.");
+        console.warn("Hints: verify server TLS certificate, ensure HTTPS endpoint, enable CORS on server, or open the endpoint directly in a tab to inspect the cert.");
+      } else {
+        alert("Booking failed: " + (error.message || "unknown error"));
+      }
     }
   }
 
