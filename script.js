@@ -65,13 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const addons = [
     { key: "headlight", name: "Headlight Restoration", price: 80 },
-    { key: "steam", name: "Steam Clean", price: 40 },
     { key: "leather", name: "Leather Treatment", price: 80 },
     { key: "engine", name: "Engine Wash", price: 80 },
     { key: "odour", name: "Odour Removal", price: 60 },
     { key: "sticker", name: "Sticker Removal", price: 50 },
-    { key: "scratch", name: "Scratch Removal", price: 50 },
-    { key: "dent", name: "Dent Removal", price: 75 }
+    { key: "scratch", name: "Scratch Removal", price: 50 }
   ];
 
   const isMobile = window.innerWidth <= 900;
@@ -329,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return chargeCents + feeCents;
     }
     function fullCharge() {
-      return calculateTotal();
+      return 1;
     }
     seg3Sidebar = document.createElement('div');
     seg3Sidebar.id = 'seg3Sidebar';
@@ -361,15 +359,15 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="summary-row">
               <span><strong>Base Price:</strong></span>
-              <span>$${basePrice}</span>
+              <span>${basePrice}</span>
             </div>
             <div class="summary-row">
               <span><strong>Transaction Fee (1.6%):</strong></span>
-              <span>$${(Math.round(basePrice * 100 * 0.016) / 100).toFixed(2)}</span>
+              <span>${(Math.round(basePrice * 100 * 0.016) / 100).toFixed(2)}</span>
             </div>
             <div class="summary-row">
               <span><strong>Total Charge:</strong></span>
-              <span>$${(fullChargeCents / 100).toFixed(2)}</span>
+              <span>${(fullChargeCents / 100).toFixed(2)}</span>
             </div>
           </div>
           <div class="addons-section">
@@ -381,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <input type="checkbox" class="addon-checkbox" value="${addon.key}" ${selectedAddons.includes(addon.key) ? "checked" : ""}>
                     ${addon.name}
                   </label>
-                  <span class="addon-price">$${addon.price}</span>
+                  <span class="addon-price">${addon.price}</span>
                 </li>
               `).join('')}
             </ul>
@@ -403,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="total-section">
             <div>
               <span class="total-label">Total (Base + Fee + Add-ons):</span>
-              <span class="total-value">$${(calculateTotal() / 100).toFixed(2)}</span>
+              <span class="total-value">${(calculateTotal() / 100).toFixed(2)}</span>
             </div>
           </div>
           <button class="checkout-btn">Confirm &amp; Checkout</button>
@@ -437,9 +435,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Build add-ons prices list.
         const addonPricesText = selectedAddons.map(key => {
           const addon = addons.find(a => a.key === key);
-          return addon ? `${addon.name}: $${addon.price.toFixed(2)}` : "";
+          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
         }).filter(s => s !== "").join(", ");
-        const bookingPriceText = `Booking Price: $${parseFloat(basePrice).toFixed(2)}`;
+        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
         pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
         pendingBookingData.customer_first_name = nameInput.value.trim();
         pendingBookingData.customer_phone = phoneInput.value.trim();
@@ -463,9 +461,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const addonPricesText = selectedAddons.map(key => {
           const addon = addons.find(a => a.key === key);
-          return addon ? `${addon.name}: $${addon.price.toFixed(2)}` : "";
+          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
         }).filter(s => s !== "").join(", ");
-        const bookingPriceText = `Booking Price: $${parseFloat(basePrice).toFixed(2)}`;
+        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
         pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
         pendingBookingData.customer_first_name = nameInput.value.trim();
         pendingBookingData.customer_phone = phoneInput.value.trim();
@@ -510,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cardTitle = card.getAttribute('data-title');
         const priceDiv = card.querySelector('.seg2-price');
         let price = prices[cat] && prices[cat][selectedSize] && prices[cat][selectedSize][cardTitle];
-        priceDiv.textContent = typeof price === 'number' ? `$${price}` : '';
+        priceDiv.textContent = typeof price === 'number' ? `${price}` : '';
       });
     });
   }
@@ -542,7 +540,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const payments = Square.payments(appId, locationId);
       await initializeSquareCard(payments);
       document.getElementById("square-card-button").addEventListener("click", async function () {
-        console.log(`Charging $${(pendingBookingData.amount / 100).toFixed(2)}`);
+        console.log(`Charging ${(pendingBookingData.amount / 100).toFixed(2)}`);
         try {
           const verificationDetails = {
             amount: (pendingBookingData.amount / 100).toFixed(2),
@@ -651,15 +649,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // This prevents the strict CORS error when the server sends a wildcard origin.
       });
 
-      if (!response.ok) {
+      let result = {};
+      if (response.ok) {
+        result = await response.json();
+        console.log("Booking result from backend:", result);
+      } else {
         const errText = await response.text().catch(()=>'<no body>');
         console.error("Error response from backend:", response.status, errText);
         alert("Booking failed. See console for details.");
-        return;
       }
-
-      const result = await response.json();
-      console.log("Booking result from backend:", result);
 
       // extract possible fields (be tolerant to different shapes)
       const checkInRaw = pendingBookingData.check_in || pendingBookingData.reserved_on || result.check_in || result.start;
@@ -671,7 +669,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const bookingRef = result.booking_ref || `BK-${Math.random().toString(36).substr(2,8).toUpperCase()}`;
       const guestName = pendingBookingData.customer_first_name || pendingBookingData.guest_name || pendingBookingData.name || 'Guest';
       const totalPaid = (typeof pendingBookingData.amount === 'number')
-        ? `$${(pendingBookingData.amount / 100).toFixed(2)}`
+        ? `${(pendingBookingData.amount / 100).toFixed(2)}`
         : (pendingBookingData.total || result.total || 'TBD');
       const statusText = result.status || 'Confirmed';
 
