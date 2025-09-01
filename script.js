@@ -297,186 +297,181 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // SEGMENT 3: Checkout Sidebar.
-  function showSeg3Sidebar({ reserved_on, seg2Tab, seg2Card }) {
-    secondaryContent.classList.remove('active');
-    setTimeout(() => {
-      secondaryContent.style.display = 'none';
-    }, 500);
-    if (seg3Sidebar) seg3Sidebar.remove();
+// SEGMENT 3: Checkout Sidebar.
+  function showSeg3Sidebar({ reserved_on, seg2Tab, seg2Card }) {
+    secondaryContent.classList.remove('active');
+    setTimeout(() => {
+      secondaryContent.style.display = 'none';
+    }, 500);
+    if (seg3Sidebar) seg3Sidebar.remove();
 
-    let basePrice = 0;
-    if (
-      selectedSize &&
-      prices[selectedSeg2Tab] &&
-      prices[selectedSeg2Tab][selectedSize] &&
-      prices[selectedSeg2Tab][selectedSize][seg2Card]
-    ) {
-      basePrice = prices[selectedSeg2Tab][selectedSize][seg2Card];
-    }
-    let selectedAddons = [];
-    function calculateTotal() {
-      let addonTotal = 0;
-      selectedAddons.forEach(key => {
-        const addon = addons.find(a => a.key === key);
-        if (addon) addonTotal += addon.price;
-      });
-      const combinedTotal = basePrice + addonTotal;
-      const chargeCents = Math.round(combinedTotal * 100);
-      const feeCents = Math.round(chargeCents * 0.016);
-      return chargeCents + feeCents;
-    }
-    function fullCharge() {
-      return 1;
-    }
-    seg3Sidebar = document.createElement('div');
-    seg3Sidebar.id = 'seg3Sidebar';
+    let basePrice = 0;
+    if (
+      selectedSize &&
+      prices[selectedSeg2Tab] &&
+      prices[selectedSeg2Tab][selectedSize] &&
+      prices[selectedSeg2Tab][selectedSize][seg2Card]
+    ) {
+      basePrice = prices[selectedSeg2Tab][selectedSize][seg2Card];
+    }
+    let selectedAddons = [];
+    
+    // This function now correctly calculates the total price in cents.
+    function calculateTotal() {
+      let addonTotal = 0;
+      selectedAddons.forEach(key => {
+        const addon = addons.find(a => a.key === key);
+        if (addon) addonTotal += addon.price;
+      });
+      const combinedTotal = basePrice + addonTotal;
+      const chargeCents = Math.round(combinedTotal * 100);
+      const feeCents = Math.round(chargeCents * 0.016);
+      return chargeCents + feeCents; // This is the final amount including fees.
+    }
+
+    seg3Sidebar = document.createElement('div');
+    seg3Sidebar.id = 'seg3Sidebar';
+    
     function renderSidebar() {
-      const fullChargeCents = fullCharge();
-      seg3Sidebar.innerHTML = `
-        <div class="seg3-header">
-          Checkout
-          <button class="seg3-x" title="Close">&times;</button>
-        </div>
-        <div class="seg3-content">
-          <div class="summary-section">
-            <div class="summary-title">Your Selection</div>
-            <div class="summary-row">
-              <span><strong>Date &amp; Time:</strong></span>
-              <span>${reserved_on}</span>
-            </div>
-            <div class="summary-row">
-              <span><strong>Package:</strong></span>
-              <span>${seg2Card || 'N/A'}</span>
-            </div>
-            <div class="summary-row">
-              <span><strong>Service:</strong></span>
-              <span>${selectedSeg2Tab}</span>
-            </div>
-            <div class="summary-row">
-              <span><strong>Vehicle Size:</strong></span>
-              <span>${selectedSize || 'Not selected'}</span>
-            </div>
-            <div class="summary-row">
-              <span><strong>Base Price:</strong></span>
-              <span>${basePrice}</span>
-            </div>
-            <div class="summary-row">
-              <span><strong>Transaction Fee (1.6%):</strong></span>
-              <span>${(Math.round(basePrice * 100 * 0.016) / 100).toFixed(2)}</span>
-            </div>
-            <div class="summary-row">
-              <span><strong>Total Charge:</strong></span>
-              <span>${(fullChargeCents / 100).toFixed(2)}</span>
-            </div>
-          </div>
-          <div class="addons-section">
-            <div class="addons-title">Add-ons</div>
-            <ul class="addon-list">
-              ${addons.map(addon => `
-                <li class="addon-item">
-                  <label class="addon-label">
-                    <input type="checkbox" class="addon-checkbox" value="${addon.key}" ${selectedAddons.includes(addon.key) ? "checked" : ""}>
-                    ${addon.name}
-                  </label>
-                  <span class="addon-price">${addon.price}</span>
-                </li>
-              `).join('')}
-            </ul>
-          </div>
-          <div class="user-details">
-            <div class="input-group">
-              <label for="customerName">Name:</label>
-              <input type="text" id="customerName" placeholder="Your Name" required>
-            </div>
-            <div class="input-group">
-              <label for="customerPhone">Phone Number:</label>
-              <input type="text" id="customerPhone" placeholder="Your Phone Number" required>
-            </div>
-            <div class="input-group">
-              <label for="carMakeModel">Car Make and Model?</label>
-              <input type="text" id="carMakeModel" placeholder="MERCEDES SUV" required>
-            </div>
-          </div>
-          <div class="total-section">
-            <div>
-              <span class="total-label">Total (Base + Fee + Add-ons):</span>
-              <span class="total-value">${(calculateTotal() / 100).toFixed(2)}</span>
-            </div>
-          </div>
-          <button class="checkout-btn">Confirm &amp; Checkout</button>
-          <button class="checkout-btn book-pay-later-btn">Book now &amp; Pay later</button>
-          <br>&nbsp;<br>&nbsp;<br>&nbsp;<br>
-        </div>
-      `;
-      seg3Sidebar.querySelector('.seg3-x').onclick = () => { /* Optional close behavior */ };
+      // We calculate the total once and use it everywhere.
+      const totalAmountCents = calculateTotal();
+      seg3Sidebar.innerHTML = `
+        <div class="seg3-header">
+          Checkout
+          <button class="seg3-x" title="Close">&times;</button>
+        </div>
+        <div class="seg3-content">
+          <div class="summary-section">
+            <div class="summary-title">Your Selection</div>
+            <div class="summary-row">
+              <span><strong>Date &amp; Time:</strong></span>
+              <span>${reserved_on}</span>
+            </div>
+            <div class="summary-row">
+              <span><strong>Package:</strong></span>
+              <span>${seg2Card || 'N/A'}</span>
+            </div>
+            <div class="summary-row">
+              <span><strong>Service:</strong></span>
+              <span>${selectedSeg2Tab}</span>
+            </div>
+            <div class="summary-row">
+              <span><strong>Vehicle Size:</strong></span>
+              <span>${selectedSize || 'Not selected'}</span>
+            </div>
+            <div class="summary-row">
+              <span><strong>Base Price:</strong></span>
+              <span>$${basePrice.toFixed(2)}</span>
+            </div>
+          </div>
+          <div class="addons-section">
+            <div class="addons-title">Add-ons</div>
+            <ul class="addon-list">
+              ${addons.map(addon => `
+                <li class="addon-item">
+                  <label class="addon-label">
+                    <input type="checkbox" class="addon-checkbox" value="${addon.key}" ${selectedAddons.includes(addon.key) ? "checked" : ""}>
+                    ${addon.name}
+                  </label>
+                  <span class="addon-price">$${addon.price.toFixed(2)}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+          <div class="user-details">
+            <div class="input-group">
+              <label for="customerName">Name:</label>
+              <input type="text" id="customerName" placeholder="Your Name" required>
+            </div>
+            <div class="input-group">
+              <label for="customerPhone">Phone Number:</label>
+              <input type="text" id="customerPhone" placeholder="Your Phone Number" required>
+            </div>
+            <div class="input-group">
+              <label for="carMakeModel">Car Make and Model?</label>
+              <input type="text" id="carMakeModel" placeholder="MERCEDES SUV" required>
+            </div>
+          </div>
+          <div class="total-section">
+            <div>
+              <span class="total-label">Total (incl. 1.6% fee):</span>
+              <span class="total-value">$${(totalAmountCents / 100).toFixed(2)}</span>
+            </div>
+          </div>
+          <button class="checkout-btn">Confirm &amp; Checkout</button>
+          <button class="checkout-btn book-pay-later-btn">Book now &amp; Pay later</button>
+          <br>&nbsp;<br>&nbsp;<br>&nbsp;<br>
+        </div>
+      `;
+      seg3Sidebar.querySelector('.seg3-x').onclick = () => { /* Optional close behavior */ };
 
-      seg3Sidebar.querySelectorAll('.addon-checkbox').forEach(cb => {
-        cb.onchange = function() {
-          const key = this.value;
-          if (this.checked) {
-            if (!selectedAddons.includes(key)) selectedAddons.push(key);
-          } else {
-            selectedAddons = selectedAddons.filter(k => k !== key);
-          }
-          renderSidebar();
-        };
-      });
+      seg3Sidebar.querySelectorAll('.addon-checkbox').forEach(cb => {
+        cb.onchange = function() {
+          const key = this.value;
+          if (this.checked) {
+            if (!selectedAddons.includes(key)) selectedAddons.push(key);
+          } else {
+            selectedAddons = selectedAddons.filter(k => k !== key);
+          }
+          renderSidebar(); // Re-render to update the total price
+        };
+      });
 
-      // Confirm & Checkout: triggers payment modal.
-      seg3Sidebar.querySelector('.checkout-btn:not(.book-pay-later-btn)').onclick = function() {
-        const nameInput = document.getElementById("customerName");
-        const phoneInput = document.getElementById("customerPhone");
-        const carInput = document.getElementById("carMakeModel");
-        if (!nameInput.value.trim() || !phoneInput.value.trim() || !carInput.value.trim()) {
-          alert("Please fill in your name, phone number, and car make/model.");
-          return;
-        }
-        // Build add-ons prices list.
-        const addonPricesText = selectedAddons.map(key => {
-          const addon = addons.find(a => a.key === key);
-          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
-        }).filter(s => s !== "").join(", ");
-        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
-        pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
-        pendingBookingData.customer_first_name = nameInput.value.trim();
-        pendingBookingData.customer_phone = phoneInput.value.trim();
-        pendingBookingData.amount = fullCharge();
-        openSquarePaymentModal();
-      };
+      // Confirm & Checkout: triggers payment modal.
+      seg3Sidebar.querySelector('.checkout-btn:not(.book-pay-later-btn)').onclick = function() {
+        const nameInput = document.getElementById("customerName");
+        const phoneInput = document.getElementById("customerPhone");
+        const carInput = document.getElementById("carMakeModel");
+        if (!nameInput.value.trim() || !phoneInput.value.trim() || !carInput.value.trim()) {
+          alert("Please fill in your name, phone number, and car make/model.");
+          return;
+        }
+        const addonPricesText = selectedAddons.map(key => {
+          const addon = addons.find(a => a.key === key);
+          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
+        }).filter(s => s !== "").join(", ");
+        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
+        pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
+        pendingBookingData.customer_first_name = nameInput.value.trim();
+        pendingBookingData.customer_phone = phoneInput.value.trim();
+        // Use the correct total for the payment amount.
+        pendingBookingData.amount = calculateTotal();
+        openSquarePaymentModal();
+      };
 
-      // Book now & Pay later: bypasses payment and finalizes booking; can only be pressed once.
-      seg3Sidebar.querySelector('.book-pay-later-btn').onclick = function() {
-        if (bookNowPayLaterClicked) return; // prevent multiple submissions
-        bookNowPayLaterClicked = true;
-        this.disabled = true;
-        const nameInput = document.getElementById("customerName");
-        const phoneInput = document.getElementById("customerPhone");
-        const carInput = document.getElementById("carMakeModel");
-        if (!nameInput.value.trim() || !phoneInput.value.trim() || !carInput.value.trim()) {
-          alert("Please fill in your name, phone number, and car make/model.");
-          bookNowPayLaterClicked = false;
-          this.disabled = false;
-          return;
-        }
-        const addonPricesText = selectedAddons.map(key => {
-          const addon = addons.find(a => a.key === key);
-          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
-        }).filter(s => s !== "").join(", ");
-        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
-        pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
-        pendingBookingData.customer_first_name = nameInput.value.trim();
-        pendingBookingData.customer_phone = phoneInput.value.trim();
-        pendingBookingData.amount = fullCharge();
-        finalizeBooking();
-      };
-    }
-    renderSidebar();
-    document.body.appendChild(seg3Sidebar);
-    setTimeout(() => {
-      seg3Sidebar.classList.add('visible');
-    }, 30);
-  }
+      // Book now & Pay later: bypasses payment and finalizes booking.
+      seg3Sidebar.querySelector('.book-pay-later-btn').onclick = function() {
+        if (bookNowPayLaterClicked) return;
+        bookNowPayLaterClicked = true;
+        this.disabled = true;
+        const nameInput = document.getElementById("customerName");
+        const phoneInput = document.getElementById("customerPhone");
+        const carInput = document.getElementById("carMakeModel");
+        if (!nameInput.value.trim() || !phoneInput.value.trim() || !carInput.value.trim()) {
+          alert("Please fill in your name, phone number, and car make/model.");
+          bookNowPayLaterClicked = false;
+          this.disabled = false;
+          return;
+        }
+        const addonPricesText = selectedAddons.map(key => {
+          const addon = addons.find(a => a.key === key);
+          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
+        }).filter(s => s !== "").join(", ");
+        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
+        pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
+        pendingBookingData.customer_first_name = nameInput.value.trim();
+        pendingBookingData.customer_phone = phoneInput.value.trim();
+        // Use the correct total for the booking amount.
+        pendingBookingData.amount = calculateTotal();
+        finalizeBooking();
+      };
+    }
+    renderSidebar();
+    document.body.appendChild(seg3Sidebar);
+    setTimeout(() => {
+      seg3Sidebar.classList.add('visible');
+    }, 30);
+  }
 
   function hideAllCardContainers() {
     document.querySelectorAll('#secondaryContent .card-container').forEach(container => {
