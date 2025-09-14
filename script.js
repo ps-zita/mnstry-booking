@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   // Global booking and payment-related state.
   let selectedSize = '';
   let selectedSeg2Tab = 'Basic'; // possible values: "Basic", "Premium", "Detail"
@@ -9,59 +9,52 @@ document.addEventListener('DOMContentLoaded', function() {
   let card; // Square card instance.
   let bookNowPayLaterClicked = false; // flag for "Book now & Pay later" button
 
-  // Mapping from service names to UUIDs.
-  const serviceUUIDMapping = {
-    "Basic wash": "578ddbbb-62b7-4061-9fee-f8ccc1c92bf5",
-    "Gold wash": "fab6e492-607c-4b5b-a5fb-987d54e596fa",
-    "Premium interior": "95875e74-5df1-4ccc-98b0-f4fef420723c",
-    "Premium exterior": "da7b5fb9-68b5-4f44-abcd-6e7604e637ea",
-    "Premium max": "d5a7fdbf-a028-45d8-a187-76609f6d5a24",
-    "Interior detail": "3069f316-a9a1-4042-ae98-26961bbd66d1",
-    "Exterior detail": "f6a28756-3bff-4bd0-9a30-0b53bd065d2d",
-    "Full detail": "f433b1b6-04ad-420c-be3c-35f768f2be7c"
-  };
+  const apiKey = 'bf70ad18-1ee9-4661-83b5-080d2dc1fc24';
+  let services = [];
+  let customFields = [];
 
-  function getServiceUUID(cardTitle, size, group) {
-    let uuid = serviceUUIDMapping[cardTitle];
-    if (!uuid) {
-      console.warn(`Service "${cardTitle}" not found. Defaulting to "Full detail".`);
-      uuid = serviceUUIDMapping["Full detail"];
+  async function fetchServices() {
+    try {
+      const response = await fetch('https://api.modulynk.app/api/v1/services', {
+        headers: {
+          'X-API-Key': apiKey
+        }
+      });
+      if (response.ok) {
+        services = await response.json();
+        console.log('Services loaded:', services);
+      } else {
+        console.error('Failed to fetch services');
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error);
     }
-    console.log(`Mapped [${group}] ${cardTitle} (${size}) to UUID: ${uuid}`);
-    return uuid;
   }
+
+  async function fetchCustomFields() {
+    try {
+      const response = await fetch('https://api.modulynk.app/api/v1/custom-fields', {
+        headers: {
+          'X-API-Key': apiKey
+        }
+      });
+      if (response.ok) {
+        customFields = await response.json();
+        console.log('Custom fields loaded:', customFields);
+      } else {
+        console.error('Failed to fetch custom fields');
+      }
+    } catch (error) {
+      console.error('Error fetching custom fields:', error);
+    }
+  }
+
+  await fetchServices();
+  await fetchCustomFields();
 
   // Square configuration parameters.
   const appId = "sq0idp-2UIVBa7RW5RhNJbPp5VAOg";
   const locationId = "FK7Q4N5CDQQH5";
-
-  // New Price configuration and available add-ons.
-  // Basic: SMALL: Basic wash: $25, Gold wash: $70
-  //        MEDIUM: Basic wash: $35, Gold wash: $75
-  //        LARGE: Basic wash: $40, Gold wash: $80
-  // Premium: SMALL: Premium interior: $110, Premium exterior: $110, Premium max: $180
-  //          MEDIUM: Premium interior: $120, Premium exterior: $120, Premium max: $190
-  //          LARGE: Premium interior: $130, Premium exterior: $200, Premium max: $200
-  // Detail:  SMALL: Interior detail: $250, Exterior detail: $300, Full detail: $400
-  //          MEDIUM: Interior detail: $250, Exterior detail: $320, Full detail: $420
-  //          LARGE: Interior detail: $300, Exterior detail: $350, Full detail: $450
-  const prices = {
-    Basic: {
-      SMALL: { "Basic wash": 25, "Gold wash": 70 },
-      MEDIUM: { "Basic wash": 35, "Gold wash": 75 },
-      LARGE: { "Basic wash": 40, "Gold wash": 80 }
-    },
-    Premium: {
-      SMALL: { "Premium interior": 110, "Premium exterior": 110, "Premium max": 180 },
-      MEDIUM: { "Premium interior": 120, "Premium exterior": 120, "Premium max": 190 },
-      LARGE: { "Premium interior": 130, "Premium exterior": 200, "Premium max": 200 }
-    },
-    Detail: {
-      SMALL: { "Interior detail": 250, "Exterior detail": 300, "Full detail": 400 },
-      MEDIUM: { "Interior detail": 250, "Exterior detail": 320, "Full detail": 420 },
-      LARGE: { "Interior detail": 300, "Exterior detail": 350, "Full detail": 450 }
-    }
-  };
 
   const addons = [
     { key: "headlight", name: "Headlight Restoration", price: 80 },
@@ -264,22 +257,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       closeCalendarModal();
       const reserved_on = localDateObj.toISOString().replace(/\.[0-9]{3}Z$/, 'Z');
-      console.log("Debug - Time being sent:", reserved_on);
-      const serviceUUID = getServiceUUID(selectedSeg2CardTitle, selectedSize, selectedSeg2Tab);
+      
+      const selectedService = services.find(s => s.name === selectedSeg2CardTitle);
+
       pendingBookingData = {
         ...pendingBookingData,
-        reserved_on,
-        seg2Tab: selectedSeg2Tab,
-        seg2Card: selectedSeg2CardTitle,
-        service_uuid: serviceUUID,
-        location_uuid: "47191ab9-1611-4468-a49c-efcd4ee1109f",
-        customer_phone: "",
-        customer_first_name: "",
-        customer_email: "user@example.com",
-        booking_comment: "", // Will be updated later with separate price info.
-        timezone: "Australia/Melbourne",
-        customer_browser_tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        customer_browser_language: navigator.language || "en"
+        startTime: reserved_on,
+        serviceId: selectedService.id,
+        price: selectedService.price,
+        duration: selectedService.duration
       };
       showSeg3Sidebar({
         reserved_on,
@@ -305,15 +291,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
     if (seg3Sidebar) seg3Sidebar.remove();
 
-    let basePrice = 0;
-    if (
-      selectedSize &&
-      prices[selectedSeg2Tab] &&
-      prices[selectedSeg2Tab][selectedSize] &&
-      prices[selectedSeg2Tab][selectedSize][seg2Card]
-    ) {
-      basePrice = prices[selectedSeg2Tab][selectedSize][seg2Card];
-    }
+    const selectedService = services.find(s => s.name === seg2Card);
+    let basePrice = selectedService ? selectedService.price : 0;
+
     let selectedAddons = [];
     
     // This function now correctly calculates the total price in cents.
@@ -418,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
 
       // Confirm & Checkout: triggers payment modal.
-      seg3Sidebar.querySelector('.checkout-btn:not(.book-pay-later-btn)').onclick = function() {
+      seg3Sidebar.querySelector('.checkout-btn:not(.book-pay-later-btn)').onclick = async function() {
         const nameInput = document.getElementById("customerName");
         const phoneInput = document.getElementById("customerPhone");
         const carInput = document.getElementById("carMakeModel");
@@ -426,21 +406,15 @@ document.addEventListener('DOMContentLoaded', function() {
           alert("Please fill in your name, phone number, and car make/model.");
           return;
         }
-        const addonPricesText = selectedAddons.map(key => {
-          const addon = addons.find(a => a.key === key);
-          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
-        }).filter(s => s !== "").join(", ");
-        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
-        pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
-        pendingBookingData.customer_first_name = nameInput.value.trim();
-        pendingBookingData.customer_phone = phoneInput.value.trim();
-        // Use the correct total for the payment amount.
-        pendingBookingData.amount = calculateTotal();
+      pendingBookingData.customerName = nameInput.value.trim();
+      pendingBookingData.customerPhone = phoneInput.value.trim();
+      pendingBookingData.carMakeModel = carInput.value.trim();
+      pendingBookingData.amount = calculateTotal();
         openSquarePaymentModal();
       };
 
       // Book now & Pay later: bypasses payment and finalizes booking.
-      seg3Sidebar.querySelector('.book-pay-later-btn').onclick = function() {
+      seg3Sidebar.querySelector('.book-pay-later-btn').onclick = async function() {
         if (bookNowPayLaterClicked) return;
         bookNowPayLaterClicked = true;
         this.disabled = true;
@@ -453,17 +427,11 @@ document.addEventListener('DOMContentLoaded', function() {
           this.disabled = false;
           return;
         }
-        const addonPricesText = selectedAddons.map(key => {
-          const addon = addons.find(a => a.key === key);
-          return addon ? `${addon.name}: ${addon.price.toFixed(2)}` : "";
-        }).filter(s => s !== "").join(", ");
-        const bookingPriceText = `Booking Price: ${parseFloat(basePrice).toFixed(2)}`;
-        pendingBookingData.booking_comment = `${carInput.value.trim()} - ${selectedSeg2Tab} - ${bookingPriceText}${addonPricesText ? " | Addon Prices: " + addonPricesText : ""}`;
-        pendingBookingData.customer_first_name = nameInput.value.trim();
-        pendingBookingData.customer_phone = phoneInput.value.trim();
-        // Use the correct total for the booking amount.
-        pendingBookingData.amount = calculateTotal();
-        finalizeBooking();
+      pendingBookingData.customerName = nameInput.value.trim();
+      pendingBookingData.customerPhone = phoneInput.value.trim();
+      pendingBookingData.carMakeModel = carInput.value.trim();
+      pendingBookingData.amount = calculateTotal();
+        await finalizeBooking();
       };
     }
     renderSidebar();
@@ -502,7 +470,8 @@ document.addEventListener('DOMContentLoaded', function() {
       cards.forEach(card => {
         const cardTitle = card.getAttribute('data-title');
         const priceDiv = card.querySelector('.seg2-price');
-        let price = prices[cat] && prices[cat][selectedSize] && prices[cat][selectedSize][cardTitle];
+        const service = services.find(s => s.name === cardTitle);
+        let price = service ? service.price : undefined;
         priceDiv.textContent = typeof price === 'number' ? `${price}` : '';
       });
     });
@@ -636,12 +605,64 @@ document.addEventListener('DOMContentLoaded', function() {
   async function finalizeBooking() {
     console.log("Finalizing booking with data:", pendingBookingData);
     try {
-      const response = await fetch("https://mnstry.duckdns.org:3001/book", {
+      // Find or create client
+      let client;
+      const clientResponse = await fetch(`https://api.modulynk.app/api/v1/clients?phone=${pendingBookingData.customerPhone}`, {
+        headers: {
+          'X-API-Key': apiKey
+        }
+      });
+
+      if (clientResponse.ok) {
+        client = await clientResponse.json();
+      } else if (clientResponse.status === 404) {
+        const [firstName, ...lastName] = pendingBookingData.customerName.split(' ');
+        const newClientResponse = await fetch('https://api.modulynk.app/api/v1/clients', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': apiKey
+          },
+          body: JSON.stringify({
+            firstName: firstName,
+            lastName: lastName.join(' '),
+            phone: pendingBookingData.customerPhone
+          })
+        });
+        if (newClientResponse.ok) {
+          client = await newClientResponse.json();
+        } else {
+          throw new Error('Failed to create client');
+        }
+      } else {
+        throw new Error('Failed to find client');
+      }
+
+      const startTime = new Date(pendingBookingData.startTime);
+      const endTime = new Date(startTime.getTime() + pendingBookingData.duration * 60000);
+
+      const bookingBody = {
+        serviceId: pendingBookingData.serviceId,
+        startTime: pendingBookingData.startTime,
+        endTime: endTime.toISOString(),
+        price: pendingBookingData.price,
+        status: 'confirmed',
+        clientId: client.id,
+        customFields: {}
+      };
+
+      const carMakeModelField = customFields.find(f => f.title === 'CAR MAKE/MODEL');
+      if (carMakeModelField) {
+        bookingBody.customFields[carMakeModelField.id] = pendingBookingData.carMakeModel;
+      }
+
+      const response = await fetch("https://api.modulynk.app/api/v1/bookings", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(pendingBookingData)
-        // The 'credentials' and 'mode' properties have been removed.
-        // This prevents the strict CORS error when the server sends a wildcard origin.
+        headers: { 
+          "Content-Type": "application/json",
+          'X-API-Key': apiKey
+        },
+        body: JSON.stringify(bookingBody)
       });
 
       let result = {};
@@ -655,17 +676,17 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       // extract possible fields (be tolerant to different shapes)
-      const checkInRaw = pendingBookingData.check_in || pendingBookingData.reserved_on || result.check_in || result.start;
-      const checkOutRaw = pendingBookingData.check_out || pendingBookingData.reserved_until || result.check_out || result.end;
+      const checkInRaw = result.startTime;
+      const checkOutRaw = result.endTime;
 
       const checkIn = formatDateTime(checkInRaw) || '—';
       const checkOut = formatDateTime(checkOutRaw) || '—';
 
-      const bookingRef = result.booking_ref || `BK-${Math.random().toString(36).substr(2,8).toUpperCase()}`;
-      const guestName = pendingBookingData.customer_first_name || pendingBookingData.guest_name || pendingBookingData.name || 'Guest';
-      const totalPaid = (typeof pendingBookingData.amount === 'number')
-        ? `${(pendingBookingData.amount / 100).toFixed(2)}`
-        : (pendingBookingData.total || result.total || 'TBD');
+      const bookingRef = result.id;
+      const guestName = `${client.firstName} ${client.lastName}`;
+      const totalPaid = (typeof result.price === 'number')
+        ? `${result.price.toFixed(2)}`
+        : 'TBD';
       const statusText = result.status || 'Confirmed';
 
       // populate modal fields safely
