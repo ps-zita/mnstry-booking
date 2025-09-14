@@ -52,24 +52,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   await fetchServices();
   await fetchCustomFields();
 
-  const prices = {
-    Basic: {
-      SMALL: { "Basic wash": 25, "Gold wash": 70 },
-      MEDIUM: { "Basic wash": 35, "Gold wash": 75 },
-      LARGE: { "Basic wash": 40, "Gold wash": 80 }
-    },
-    Premium: {
-      SMALL: { "Premium interior": 110, "Premium exterior": 110, "Premium max": 180 },
-      MEDIUM: { "Premium interior": 120, "Premium exterior": 120, "Premium max": 190 },
-      LARGE: { "Premium interior": 130, "Premium exterior": 200, "Premium max": 200 }
-    },
-    Detail: {
-      SMALL: { "Interior detail": 250, "Exterior detail": 300, "Full detail": 400 },
-      MEDIUM: { "Interior detail": 250, "Exterior detail": 320, "Full detail": 420 },
-      LARGE: { "Interior detail": 300, "Exterior detail": 350, "Full detail": 450 }
-    }
-  };
-
   // Square configuration parameters.
   const appId = "sq0idp-2UIVBa7RW5RhNJbPp5VAOg";
   const locationId = "FK7Q4N5CDQQH5";
@@ -100,6 +82,7 @@ document.addEventListener('DOMContentLoaded', async function() {
       this.classList.add('selected');
       continueButton.classList.add('enabled');
       selectedSize = this.getAttribute('data-size');
+      updateCardPrices();
     });
   });
 
@@ -283,7 +266,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         startTime: reserved_on,
         serviceId: selectedService ? selectedService.id : null,
         price: selectedService ? selectedService.price : 0,
-        duration: selectedService ? selectedService.duration : 0
+        duration: selectedService ? selectedService.duration : 0,
+        variants: selectedService ? selectedService.variants : null
       };
       showSeg3Sidebar({
         reserved_on,
@@ -309,15 +293,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     }, 500);
     if (seg3Sidebar) seg3Sidebar.remove();
 
-    let basePrice = 0;
-    if (
-      selectedSize &&
-      prices[selectedSeg2Tab] &&
-      prices[selectedSeg2Tab][selectedSize] &&
-      prices[selectedSeg2Tab][selectedSize][seg2Card]
-    ) {
-      basePrice = prices[selectedSeg2Tab][selectedSize][seg2Card];
-    }
+    const selectedService = services.find(s => s.name === seg2Card);
+    let basePrice = 0;
+    if (selectedService && selectedService.variants) {
+        try {
+            const variants = JSON.parse(selectedService.variants);
+            if (variants && variants[selectedSize]) {
+                basePrice = variants[selectedSize];
+            }
+        } catch (e) {
+            console.error('Error parsing variants JSON:', e);
+        }
+    }
 
     let selectedAddons = [];
     
@@ -495,8 +482,19 @@ document.addEventListener('DOMContentLoaded', async function() {
       cards.forEach(card => {
         const cardTitle = card.getAttribute('data-title');
         const priceDiv = card.querySelector('.seg2-price');
-        let price = prices[cat] && prices[cat][selectedSize] && prices[cat][selectedSize][cardTitle];
-        priceDiv.textContent = typeof price === 'number' ? `${price}` : '';
+        const service = services.find(s => s.name === cardTitle);
+        let price;
+        if (service && service.variants) {
+            try {
+                const variants = JSON.parse(service.variants);
+                if (variants && variants[selectedSize]) {
+                    price = variants[selectedSize];
+                }
+            } catch (e) {
+                console.error('Error parsing variants JSON:', e);
+            }
+        }
+        priceDiv.textContent = typeof price === 'number' ? `$${price}` : '';
       });
     });
   }
