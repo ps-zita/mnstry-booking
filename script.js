@@ -665,6 +665,24 @@ document.addEventListener('DOMContentLoaded', async function() {
       if (response.ok) {
         result = await response.json();
         console.log("Booking result from backend:", result);
+
+        // Send SMS confirmation
+        const bookingDate = new Date(pendingBookingData.startTime).toLocaleDateString('en-AU', { timeZone: 'Australia/Melbourne' });
+        const bookingTime = new Date(pendingBookingData.startTime).toLocaleTimeString('en-AU', { timeZone: 'Australia/Melbourne', hour: '2-digit', minute: '2-digit' });
+        const smsMessage = `Hi ${pendingBookingData.customerName}! your ${selectedSeg2CardTitle} has been confirmed for ${bookingTime} on ${bookingDate} at 473A Centre RD, Bentleigh.`;
+
+        fetch("https://api.modulynk.app/api/v1/sms/send", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            'X-API-Key': apiKey
+          },
+          body: JSON.stringify({
+            phone: pendingBookingData.customerPhone,
+            message: smsMessage
+          })
+        }).catch(error => console.error('Error sending SMS:', error));
+
       } else {
         const errText = await response.text().catch(()=>'<no body>');
         console.error("Error response from backend:", response.status, errText);
