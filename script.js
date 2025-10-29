@@ -639,9 +639,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
       const bookingBody = {
         serviceId: pendingBookingData.serviceId,
-        startTime: pendingBookingData.startTime,
+        startTime: startTime.toISOString(),
         endTime: endTime.toISOString(),
-        price: (basePrice + selectedAddons.reduce((acc, key) => acc + addons.find(a => a.key === key).price, 0)).toFixed(2),
+        price: (pendingBookingData.price + selectedAddons.reduce((acc, key) => acc + addons.find(a => a.key === key).price, 0)).toFixed(2),
         status: 'confirmed',
         clientId: client.id,
         customFields: []
