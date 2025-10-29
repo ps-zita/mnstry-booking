@@ -641,7 +641,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         serviceId: pendingBookingData.serviceId,
         startTime: pendingBookingData.startTime,
         endTime: endTime.toISOString(),
-        price: pendingBookingData.price,
+        price: (basePrice + selectedAddons.reduce((acc, key) => acc + addons.find(a => a.key === key).price, 0)).toFixed(2),
         status: 'confirmed',
         clientId: client.id,
         customFields: []
@@ -652,6 +652,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         bookingBody.customFields.push({
           title: 'CAR MAKE/MODEL',
           value: pendingBookingData.carMakeModel
+        });
+      }
+
+      if (selectedAddons.length > 0) {
+        bookingBody.customFields.push({
+          title: 'Add-ons',
+          value: selectedAddons.map(key => addons.find(a => a.key === key).name).join(', ')
         });
       }
 
