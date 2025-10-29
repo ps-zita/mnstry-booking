@@ -644,12 +644,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         price: pendingBookingData.price,
         status: 'confirmed',
         clientId: client.id,
-        customFields: {}
+        customFields: []
       };
 
       const carMakeModelField = customFields.find(f => f.title === 'CAR MAKE/MODEL');
       if (carMakeModelField) {
-        bookingBody.customFields[carMakeModelField.id] = pendingBookingData.carMakeModel;
+        bookingBody.customFields.push({
+          title: 'CAR MAKE/MODEL',
+          value: pendingBookingData.carMakeModel
+        });
       }
 
       const response = await fetch("https://api.modulynk.app/api/v1/bookings", {
