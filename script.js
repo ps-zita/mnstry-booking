@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async function() {
           opt.value = `${hourStr}:00`;
           const ampm = hour < 12 ? 'am' : 'pm';
           const dispHour = hour <= 12 ? hour : hour - 12;
-          opt.textContent = `${dispHour}:00 ${ampm}`;
+          opt.textContent = `${dispHour + 1}:00 ${ampm}`;
           timeSelect.appendChild(opt);
         }
       }
