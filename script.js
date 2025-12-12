@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: 8, title: "Full detail", description: "Our most comprehensive service. Combines a full exterior cut and polish with a deep interior steam clean and conditioning.", prices: { SMALL: 450, MEDIUM: 500, LARGE: 550 }, special_time: '09:00', duration: 480 }
         ]
     };
+    const WEBHOOK_ID = 'YOUR_WEBHOOK_ID'; // Replace with the actual public webhook ID for the business
 
     // --- STATE ---
     let selectedSize = null;
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCTIONS ---
     async function apiFetch(endpoint, options = {}) {
-        const headers = { 'Content-Type': 'application/json', ...options.headers }; // Removed X-API-Key
+        const headers = { 'Content-Type': 'application/json', ...options.headers };
         const response = await fetch(`https://api.modulynk.app/api/v1/public-booking${endpoint}`, { ...options, headers });
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: response.statusText }));
@@ -48,33 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function findOrCreateClient(name, phone) {
         try {
-            // Adjusted endpoint for public access
-            const existingClients = await apiFetch(`/clients?phone=${encodeURIComponent(phone)}`);
-            if (existingClients && existingClients.length > 0) {
-                return existingClients[0];
-            }
+            const existingClient = await apiFetch(`/clients/${WEBHOOK_ID}?phone=${encodeURIComponent(phone)}`);
+            return existingClient;
         } catch (error) {
-            // If client not found (404), proceed to create
-            if (error.message && error.message.includes('404')) {
+            if (error.message.includes('404')) {
                 const [firstName, ...lastNameParts] = name.split(' ');
                 const lastName = lastNameParts.join(' ');
-                // Adjusted endpoint for public access
-                return apiFetch('/clients', {
+                return apiFetch(`/clients/${WEBHOOK_ID}`, {
                     method: 'POST',
                     body: JSON.stringify({ firstName, lastName, phone })
                 });
             }
-            console.error("Error finding client:", error);
-            throw error; // Re-throw to propagate the error
+            console.error("Error finding or creating client:", error);
+            throw error;
         }
-
-        const [firstName, ...lastNameParts] = name.split(' ');
-        const lastName = lastNameParts.join(' ');
-        // Adjusted endpoint for public access
-        return apiFetch('/clients', {
-            method: 'POST',
-            body: JSON.stringify({ firstName, lastName, phone })
-        });
     }
 
     function showStep(stepNumber) {
@@ -107,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.querySelectorAll('.service-cards .card').forEach(c => c.classList.remove('selected'));
                 card.classList.add('selected');
                 updateSummary();
-                renderTimeSlots(); // Re-render time slots when a new service is selected
+                renderTimeSlots();
                 showStep(3);
             });
             serviceCardsContainer.appendChild(card);
@@ -127,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedDate.setHours(0,0,0,0);
 
         let startHour = 8;
-        const endHour = 17; // Assuming business closes at 5 PM
+        const endHour = 17;
 
         if (selectedDate.getTime() === today.getTime()) {
             const currentHour = new Date().getHours();
@@ -143,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (selectedService.special_time) {
             const [hour, minute] = selectedService.special_time.split(':');
-            if (parseInt(hour) >= startHour && parseInt(hour) <= endHour) { // Check if special time is within operating hours
+            if (parseInt(hour) >= startHour && parseInt(hour) <= endHour) {
                 const timeSlot = document.createElement('div');
                 timeSlot.className = 'time-slot';
                 timeSlot.textContent = '9:00 AM';
@@ -159,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeSlot.className = 'time-slot';
                 const ampm = hour < 12 ? 'AM' : 'PM';
                 let displayHour = hour % 12;
-                if(displayHour === 0) displayHour = 12; // Handle midnight/noon
+                if(displayHour === 0) displayHour = 12;
                 timeSlot.textContent = `${displayHour}:00 ${ampm}`;
                 timeSlot.dataset.time = `${String(hour).padStart(2, '0')}:00`;
                 timeSlot.addEventListener('click', () => handleTimeSelection(timeSlot));
@@ -246,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 customFields: [{ title: "CAR MAKE/MODEL", value: car }]
             };
 
-            // Using the new public-booking endpoint
             await apiFetch('/request-booking', {
                 method: 'POST',
                 body: JSON.stringify(bookingData)
