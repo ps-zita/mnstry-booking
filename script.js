@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: 8, title: "Full detail", description: "Our most comprehensive service. Combines a full exterior cut and polish with a deep interior steam clean and conditioning.", prices: { SMALL: 450, MEDIUM: 500, LARGE: 550 }, special_time: '09:00', duration: 480 }
         ]
     };
-    const WEBHOOK_ID = 'YOUR_WEBHOOK_ID'; // Replace with the actual public webhook ID for the business
+    const WEBHOOK_ID = 'https://api.modulynk.app/api/webhooks/easyweek/87e96275-5582-44f4-969e-751c53277bde';
 
     // --- STATE ---
     let selectedSize = null;
