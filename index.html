@@ -1,210 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Payment Page</title>
-    <link rel="stylesheet" href="style.css" />
-    <!-- Include Axios -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- Include Square Payment SDK -->
-    <script src="https://web.squarecdn.com/v1/square.js"></script>
-  </head>
-  <body>
-    <!-- SEGMENT 1: UNCHANGED CONTENT -->
-    <div id="mainContent" class="container fade">
-      <h1 class="title">Complete your <span class="highlight">booking!</span></h1>
-      <!-- 
-          The following button-container is commented out so that we can later re-add
-          the "Choose Your Wash" and "Build Your Wash" buttons.
-          -----------------------------------------------
-          <div class="button-container">
-            <div class="button active">Choose Your Wash</div>
-            <div class="button">Build Your Wash</div>
-          </div>
-          -----------------------------------------------
-      -->
-      <div class="info-section">
-        <img
-          src="https://images.squarespace-cdn.com/content/v1/64fa7ffb67fca8489fcdb2e3/f4bddd51-936f-4acb-899f-38159427c4b9/Icon-Color.png"
-          alt="Help Icon"
-          class="gradient-icon"
-        />
-        <p>
-          Have questions about washing your car?<br />
-          <a href="tel:0468392508">Chat with a specialist</a>
-        </p>
-      </div>
-      <div class="card-container">
-        <div class="card" data-size="SMALL">
-          SMALL
-          <img src="sedan.png" alt="Sedan/Hatchback" class="sedan" />
-          <p>
-            sedans <br />
-            hatchbacks
-          </p>
-        </div>
-        <div class="card" data-size="MEDIUM">
-          MEDIUM
-          <img src="suv.png" alt="Small SUV" class="suv" />
-          <p>small SUVs</p>
-        </div>
-        <div class="card" data-size="LARGE">
-          LARGE
-          <img src="truck.png" alt="Large SUV, Van, Truck" class="truck" />
-          <p>large SUVs, vans, trucks</p>
-        </div>
-      </div>
-      <div id="continueButton" class="continue-button">Continue</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ministry of Detailing - Under Construction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .contact-info {
+            font-weight: bold;
+            color: #2c5aa0;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Coming Soon!</h1>
+        <p>This page is currently under construction as we work to improve your experience.</p>
+        <p>Please check back tomorrow or contact us directly to make a booking:</p>
+        <div class="contact-info">0468 392 508</div>
     </div>
-    <!-- SEGMENT 2: REWORKED CARDS with new service grouping -->
-    <div id="secondaryContent" class="fade">
-      <div id="backButton">×</div>
-      <div id="seg2RelativeWrap">
-        <div id="seg2ButtonContainer">
-          <!-- New seg2 buttons without an initial "active" state -->
-          <button class="seg2button" data-tab="Basic">Basic</button>
-          <button class="seg2button" data-tab="Premium">Premium</button>
-          <button class="seg2button" data-tab="Detail">Detail</button>
-        </div>
-        <div id="seg2CardColumn">
-          <!-- BASIC -->
-          <div class="card-container" id="seg2Cards-Basic">
-            <div class="seg2-card" data-title="Basic wash">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Basic wash</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                A basic exterior hand wash and dry, complete with tyre glow.
-              </p>
-            </div>
-            <div class="seg2-card" data-title="Gold wash">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Gold wash</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                Combines our basic exterior wash with an interior vacuum, wipe-down, and window cleaning.
-              </p>
-            </div>
-          </div>
-          <!-- PREMIUM -->
-          <div class="card-container" id="seg2Cards-Premium">
-            <div class="seg2-card" data-title="Premium interior">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Premium interior</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                A deep interior clean: all fabrics are brushed, blown, and vacuumed, while trims, dash, and console get a deep wipe and dressing. Includes a basic exterior wash, window cleaning, and a premium air freshener.
-              </p>
-            </div>
-            <div class="seg2-card" data-title="Premium exterior">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Premium exterior</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                A professional exterior hand wash, clay bar treatment, hand polish, and spray wax. Includes a basic interior vacuum, wipe-down, and window cleaning.
-              </p>
-            </div>
-            <div class="seg2-card" data-title="Premium max">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Premium max</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                The ultimate package, combining our Premium Interior and Premium Exterior services for a complete vehicle transformation.
-              </p>
-            </div>
-          </div>
-          <!-- DETAIL -->
-          <div class="card-container" id="seg2Cards-Detail">
-            <div class="seg2-card" data-title="Interior detail">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Interior detail</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                Meticulous interior detailing. Fabrics are brushed, blown, vacuumed, and steam cleaned. All leather and plastic trims are shampooed and conditioned. We detail the dashboard, console, and air vents, finishing with sanitization and odor removal.
-              </p>
-            </div>
-            <div class="seg2-card" data-title="Exterior detail">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Exterior detail</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                Focuses on perfecting your vehicle's paint. Includes a hand wash, clay bar treatment, machine cut and polish with a spray wax finish, plus detailed cleaning of wheels, rims, and door jambs.
-              </p>
-            </div>
-            <div class="seg2-card" data-title="Full detail">
-              <div class="seg2-card-header">
-                <div class="seg2-card-title">Full detail</div>
-                <div class="seg2-price"></div>
-              </div>
-              <p class="seg2-card-description">
-                Our most comprehensive service. Combines a full exterior cut and polish with a deep interior steam clean and conditioning. Includes wheels, door jambs, console detailing, sanitization, odor removal, and a water-repellent window treatment.
-              </p>
-            </div>
-          </div>
-          <div id="seg2ContinueButton" class="continue-button" tabindex="0">Continue</div>
-        </div>
-      </div>
-    </div>
-    <!-- The Square Payment modal will be dynamically created -->
-    <script src="script.js"></script>
-
-    <!-- Booking complete modal -->
-    <div id="bookingModal" class="booking-modal" aria-hidden="true" role="dialog" aria-labelledby="bm-heading">
-      <div class="bm-overlay" id="bmOverlay" tabindex="-1"></div>
-
-      <div class="bm-panel" role="document" aria-modal="true" aria-describedby="bm-sub">
-        <button class="bm-close" id="bmClose" aria-label="Close">&times;</button>
-
-        <div class="bm-body">
-          <div class="bm-badge" aria-hidden="true">
-            <div class="bm-check">✓</div>
-          </div>
-
-          <div class="bm-content">
-            <h2 id="bm-heading">Thank you — your booking is confirmed</h2>
-            <p class="bm-sub" id="bm-sub">We’ve sent a confirmation to your number. If you need to make changes, contact support below.</p>
-
-            <div class="bm-info" aria-live="polite">
-              <div style="margin-left:auto;text-align:right; width:100%">
-                <div class="muted">Status</div>
-                <div style="font-weight:700;color:var(--success);margin-top:6px" id="bmStatus">Confirmed</div>
-              </div>
-            </div>
-
-            <div class="bm-grid" style="margin-top:18px">
-              <div class="detail">
-                <div class="k">Guest</div>
-                <div class="v" id="bmGuest">John Doe</div>
-              </div>
-              <div class="detail">
-                <div class="k">Check-in</div>
-                <div class="v" id="bmCheckIn">Mon, 21 Apr 2025 • 15:00</div>
-              </div>
-              <div class="detail">
-                <div class="k">Check-out</div>
-                <div class="v" id="bmCheckOut">Thu, 24 Apr 2025 • 11:00</div>
-              </div>
-              <div class="detail">
-                <div class="k">Total</div>
-                <div class="v" id="bmTotal">USD 420.00</div>
-              </div>
-            </div>
-
-            <div class="bm-actions">
-              <button class="btn btn-primary" id="bmClosePrimary">Done</button>
-              <a class="btn" style="color:var(--muted)" id="bmContact" href="mailto:support@example.com">Contact support</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
+</body>
 </html>
