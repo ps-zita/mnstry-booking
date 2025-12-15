@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'Content-Type': 'application/json',
             ...options.headers
         };
-        const response = await fetch(`https://major-meals-scream.loca.lt/api${endpoint}`, { ...options, headers });
+        const response = await fetch(`https://chubby-papers-boil.loca.lt/api${endpoint}`, { ...options, headers });
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: response.statusText }));
             throw new Error(errorData.message || `API request failed: ${response.statusText}`);
