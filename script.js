@@ -39,9 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function apiFetch(endpoint, options = {}) {
         const headers = {
             'Content-Type': 'application/json',
-            ...options.headers
+            'Bypass-Tunnel-Reminder': 'true',
+            ...options.headers 
         };
-        const response = await fetch(`https://chubby-papers-boil.loca.lt/api${endpoint}`, { ...options, headers });
+        const response = await fetch(`https://mnstry.modulynk.app/api${endpoint}`, { ...options, headers });
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: response.statusText }));
             throw new Error(errorData.message || `API request failed: ${response.statusText}`);
