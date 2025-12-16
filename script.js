@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'Bypass-Tunnel-Reminder': 'true',
             ...options.headers 
         };
-        const response = await fetch(`https://mnstry.modulynk.app/api${endpoint}`, { ...options, headers });
+        const response = await fetch(`https://cia-chen-memory-lined.trycloudflare.com/api${endpoint}`, { ...options, headers });
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: response.statusText }));
             throw new Error(errorData.message || `API request failed: ${response.statusText}`);
