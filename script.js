@@ -39,11 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
     async function apiFetch(endpoint, options = {}) {
             const headers = {
                 'Content-Type': 'application/json',
-                'Bypass-Tunnel-Reminder': 'true', // This header is only for localtunnel, harmless for Cloudflare
+                'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9', // Temporary hardcoded API key for debugging
                 ...options.headers
             };
-            // The endpoint is now relative to the proxy's root, e.g., /clients, /request-booking
-            const response = await fetch(`https://cia-chen-memory-lined.trycloudflare.com/api${endpoint}`, { ...options, headers });
+            // Directly call the Modulynk API instead of the proxy
+            const response = await fetch(`https://api.modulynk.app/api/v1${endpoint}`, { ...options, headers });
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ message: response.statusText }));
                 throw new Error(errorData.message || `API request failed: ${response.statusText}`);
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 startHour = currentHour + 1;
             }
         }
-        
+
         if (startHour > endHour) {
              timeSlotsContainer.innerHTML = '<p>No more available slots for today.</p>';
              return;
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timeSlotsContainer.innerHTML = '<p>No available time slots for the selected date.</p>';
         }
     }
-    
+
     function handleTimeSelection(timeSlotElement) {
         selectedDateTime = `${bookingDateInput.value}T${timeSlotElement.dataset.time}`;
         document.querySelectorAll('.time-slot').forEach(ts => ts.classList.remove('selected'));
@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             const client = await findOrCreateClient(name, phone);
-            
+
             const startTime = new Date(selectedDateTime);
             const endTime = new Date(startTime.getTime() + selectedService.duration * 60000);
 
