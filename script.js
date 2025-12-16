@@ -37,20 +37,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNCTIONS ---
     async function apiFetch(endpoint, options = {}) {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Bypass-Tunnel-Reminder': 'true',
-            ...options.headers 
-        };
-        const response = await fetch(`https://cia-chen-memory-lined.trycloudflare.com/api${endpoint}`, { ...options, headers });
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ message: response.statusText }));
-            throw new Error(errorData.message || `API request failed: ${response.statusText}`);
-        }
-        return response.json();
-    }
-
-    async function findOrCreateClient(name, phone) {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Bypass-Tunnel-Reminder': 'true', // This header is only for localtunnel, harmless for Cloudflare
+                ...options.headers
+            };
+            // The endpoint is now relative to the proxy's root, e.g., /clients, /request-booking
+            const response = await fetch(`https://cia-chen-memory-lined.trycloudflare.com/api${endpoint}`, { ...options, headers });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                throw new Error(errorData.message || `API request failed: ${response.statusText}`);
+            }
+            return response.json();
+        }    async function findOrCreateClient(name, phone) {
         try {
             // Try to find existing client by phone number
             try {
