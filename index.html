@@ -3,99 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ministry of Detailing</title>
-    <link rel="stylesheet" href="assets/styles.css">
+    <title>Ministry of Detailing - Under Construction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .contact-info {
+            font-weight: bold;
+            color: #2c5aa0;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Ministry of Detailing</h1>
-            <p>Select your vehicle and desired service.</p>
-            <div class="progress-bar">
-                <div class="progress-step active" data-step="1"></div>
-                <div class="progress-step" data-step="2"></div>
-                <div class="progress-step" data-step="3"></div>
-                <div class="progress-step" data-step="4"></div>
-                <div class="progress-step" data-step="5"></div>
-            </div>
-        </header>
-
-        <main>
-            <section class="step step--active" id="step-1">
-                <h2>1. Select Vehicle Size</h2>
-                <div class="card-container vehicle-cards">
-                    <div class="card" data-size="SMALL">
-                        <img src="assets/sedan.png" alt="Sedan/Hatchback">
-                        <h3>Small</h3>
-                        <p>Sedans, Hatchbacks</p>
-                    </div>
-                    <div class="card" data-size="MEDIUM">
-                        <img src="assets/suv.png" alt="Small SUV">
-                        <h3>Medium</h3>
-                        <p>Small SUVs</p>
-                    </div>
-                    <div class="card" data-size="LARGE">
-                        <img src="assets/truck.png" alt="Large SUV, Van, Truck">
-                        <h3>Large</h3>
-                        <p>Large SUVs, Vans, Trucks</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="step" id="step-2">
-                <h2>2. Select Service</h2>
-                <div class="service-tabs">
-                    <button class="service-tab active" data-tab="Basic">Basic</button>
-                    <button class="service-tab" data-tab="Premium">Premium</button>
-                    <button class="service-tab" data-tab="Detail">Detail</button>
-                </div>
-                <div class="card-container service-cards">
-                    <!-- Service cards will be dynamically inserted here -->
-                </div>
-                <div class="button-group">
-                    <button class="nav-button prev-button" data-prev-step="1">Back</button>
-                </div>
-            </section>
-            
-            <section class="step" id="step-3">
-                <h2>3. Select Date & Time</h2>
-                <div class="date-time-container">
-                    <input type="date" id="booking-date">
-                    <div id="time-slots" class="time-slots-container"></div>
-                </div>
-                 <div class="button-group">
-                    <button class="nav-button prev-button" data-prev-step="2">Back</button>
-                </div>
-            </section>
-
-            <section class="step" id="step-4">
-                <h2>4. Your Details & Confirmation</h2>
-                <div class="summary">
-                    <p>Vehicle Size: <span id="summary-size"></span></p>
-                    <p>Service: <span id="summary-service"></span></p>
-                    <p>Date & Time: <span id="summary-datetime"></span></p>
-                    <p class="price">Total: <span id="summary-price"></span></p>
-                </div>
-                <div class="user-details-form">
-                    <input type="text" id="user-name" placeholder="Your Name" required>
-                    <input type="tel" id="user-phone" placeholder="Phone Number" required>
-                    <input type="text" id="user-car" placeholder="Car Make & Model" required>
-                </div>
-                <div class="button-group">
-                    <button class="nav-button prev-button" data-prev-step="3">Back</button>
-                    <button class="continue-button" id="book-now-btn">Request Booking</button>
-                </div>
-            </section>
-            
-            <section class="step" id="step-5">
-                <h2>Thank You!</h2>
-                <div class="summary">
-                    <p>Your booking has been requested. You will be notified once it's approved.</p>
-                </div>
-            </section>
-        </main>
+        <h1>Coming Soon!</h1>
+        <p>This page is currently under construction as we work to improve your experience.</p>
+        <p>Please check back tomorrow or contact us directly to make a booking:</p>
+        <div class="contact-info">0468 392 508</div>
     </div>
-
-    <script src="script.js"></script>
 </body>
 </html>
