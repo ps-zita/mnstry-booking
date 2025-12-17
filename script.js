@@ -263,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 serviceId: selectedService.id,
                 startTime: startTime.toISOString(),
                 endTime: endTime.toISOString(),
+                status: 'requested',  // Set status to 'requested' for booking requests
                 clientId: client.id,
                 customFields: [{ title: "CAR MAKE/MODEL", value: car }]
             };
