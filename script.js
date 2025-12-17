@@ -91,16 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('Failed to retrieve client after creation conflict');
                 }
             } else {
-                // Check if it's a different error than what we expect
-                const errorText = await newClientResponse.text();
-                console.error('Client creation failed:', newClientResponse.status, errorText);
-                throw new Error(`Failed to create client: ${newClientResponse.status} - ${errorText}`);
+                throw new Error(`Failed to create client: ${newClientResponse.status}`);
             }
         } else {
-            // Check the error response for more details
-            const errorText = await clientResponse.text();
-            console.error('Client lookup failed:', clientResponse.status, errorText);
-            throw new Error(`Failed to lookup client: ${clientResponse.status} - ${errorText}`);
+            throw new Error(`Failed to lookup client: ${clientResponse.status}`);
         }
     }
 
