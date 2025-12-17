@@ -51,50 +51,33 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         }
     async function findOrCreateClient(name, phone) {
-        // Try to find existing client by phone number
-        const clientResponse = await fetch(`https://api.modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
-            headers: {
-                'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9' // Using same API key
+        try {
+            // Try to find existing client by phone number
+            try {
+                const existingClients = await apiFetch(`/clients?phone=${encodeURIComponent(phone)}`);
+                if (Array.isArray(existingClients) && existingClients.length > 0) {
+                    return existingClients[0]; // Return first matching client
+                }
+            } catch (findError) {
+                if (findError.message.includes('404')) {
+                    // continue to create
+                } else {
+                    console.warn("Could not find existing client:", findError);
+                }
             }
-        });
 
-        if (clientResponse.ok) {
-            // Client found
-            return await clientResponse.json();
-        } else if (clientResponse.status === 404) {
-            // Client not found, proceed to create
+            // If not found, create new client
             const [firstName, ...lastNameParts] = name.split(' ');
             const lastName = lastNameParts.join(' ');
-
-            const newClientResponse = await fetch('https://api.modulynk.app/api/v1/clients', {
+            const newClient = await apiFetch('/clients', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9'
-                },
                 body: JSON.stringify({ firstName, lastName, phone })
             });
 
-            if (newClientResponse.ok) {
-                return await newClientResponse.json();
-            } else if (newClientResponse.status === 409) {
-                // Handle race condition where client was created between lookup and creation
-                // Try to fetch the client again
-                const finalResponse = await fetch(`https://api.modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
-                    headers: {
-                        'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9'
-                    }
-                });
-                if (finalResponse.ok) {
-                    return await finalResponse.json();
-                } else {
-                    throw new Error('Failed to retrieve client after creation conflict');
-                }
-            } else {
-                throw new Error(`Failed to create client: ${newClientResponse.status}`);
-            }
-        } else {
-            throw new Error(`Failed to lookup client: ${clientResponse.status}`);
+            return newClient;
+        } catch (error) {
+            console.error("Error finding or creating client:", error);
+            throw error;
         }
     }
 
