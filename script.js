@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const services = {
         "Basic": [
             { id: 1, title: "Basic wash", description: "A basic exterior hand wash and dry, complete with tyre glow.", prices: { SMALL: 25, MEDIUM: 35, LARGE: 40 }, duration: 30 },
-            { id: 2, title: "Gold wash", description: "Combines our basic exterior wash with an interior vacuum, wipe-down, and window cleaning.", prices: { SMALL: 50, MEDIUM: 60, LARGE: 70 }, duration: 60 }
+            { id: 2, title: "Gold wash", description: "Combines our basic exterior wash with an interior vacuum, wipe-down, and window cleaning.", prices: { SMALL: 70, MEDIUM: 75, LARGE: 80 }, duration: 60 }
         ],
         "Premium": [
             { id: 3, title: "Premium interior", description: "A deep interior clean: all fabrics are brushed, blown, and vacuumed, while trims, dash, and console get a deep wipe and dressing.", prices: { SMALL: 110, MEDIUM: 120, LARGE: 130 }, duration: 120 },
@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: 5, title: "Premium max", description: "The ultimate package, combining our Premium Interior and Premium Exterior services for a complete vehicle transformation.", prices: { SMALL: 180, MEDIUM: 190, LARGE: 200 }, duration: 180 }
         ],
         "Detail": [
-            { id: 6, title: "Interior detail", description: "Meticulous interior detailing. Fabrics are brushed, blown, vacuumed, and steam cleaned. All leather and plastic trims are shampooed and conditioned.", prices: { SMALL: 250, MEDIUM: 280, LARGE: 320 }, duration: 240 },
-            { id: 7, title: "Exterior detail", description: "Focuses on perfecting your vehicle's paint. Includes a hand wash, clay bar treatment, machine cut and polish with a spray wax finish.", prices: { SMALL: 250, MEDIUM: 280, LARGE: 320 }, special_time: '09:00', duration: 240 },
-            { id: 8, title: "Full detail", description: "Our most comprehensive service. Combines a full exterior cut and polish with a deep interior steam clean and conditioning.", prices: { SMALL: 450, MEDIUM: 500, LARGE: 550 }, special_time: '09:00', duration: 480 }
+            { id: 6, title: "Interior detail", description: "Meticulous interior detailing. Fabrics are brushed, blown, vacuumed, and steam cleaned. All leather and plastic trims are shampooed and conditioned.", prices: { SMALL: 250, MEDIUM: 270, LARGE: 300 }, duration: 240 },
+            { id: 7, title: "Exterior detail", description: "Focuses on perfecting your vehicle's paint. Includes a hand wash, clay bar treatment, machine cut and polish with a spray wax finish.", prices: { SMALL: 250, MEDIUM: 270, LARGE: 300 }, special_time: '09:00', duration: 240 },
+            { id: 8, title: "Full detail", description: "Our most comprehensive service. Combines a full exterior cut and polish with a deep interior steam clean and conditioning.", prices: { SMALL: 400, MEDIUM: 420, LARGE: 450 }, special_time: '09:00', duration: 480 }
         ]
     };
 
