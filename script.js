@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('summary-service').textContent = selectedService.title;
             document.getElementById('summary-price').textContent = `$${selectedService.prices[selectedSize]}`;
             if (selectedDateTime) {
-                document.getElementById('summary-datetime').textContent = new Date(selectedDateTime).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric' });
+                document.getElementById('summary-datetime').textContent = new Date(selectedDateTime).toLocaleString('en-US', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' });
             }
         }
     }
