@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 'X-API-Key': 'mk_5a4ad5cbd7fe4cdf9d912db87a0d7a64', 
                 ...options.headers
             };
-            // Directly call the Modulynk API instead of the proxy
-            const response = await fetch(`https://api.modulynk.app/api/v1${endpoint}`, { ...options, headers });
+            // Directly call the Modulynk API on the primary domain
+            const response = await fetch(`https://modulynk.app/api/v1${endpoint}`, { ...options, headers });
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ message: response.statusText }));
                 throw new Error(errorData.message || `API request failed: ${response.statusText}`);
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     async function findOrCreateClient(name, phone) {
         // Try to find existing client by phone number using direct fetch to handle 404 properly
-        const clientResponse = await fetch(`https://api.modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
+        const clientResponse = await fetch(`https://modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
             headers: {
                 'X-API-Key': 'mk_5a4ad5cbd7fe4cdf9d912db87a0d7a64' 
             }
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const [firstName, ...lastNameParts] = name.split(' ');
             const lastName = lastNameParts.join(' ');
 
-            const newClientResponse = await fetch('https://api.modulynk.app/api/v1/clients', {
+            const newClientResponse = await fetch('https://modulynk.app/api/v1/clients', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (newClientResponse.status === 409) {
                 // Handle race condition where client was created between lookup and creation
                 // Try to fetch the client again
-                const finalResponse = await fetch(`https://api.modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
+                const finalResponse = await fetch(`https://modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
                     headers: {
                         'X-API-Key': 'mk_5a4ad5cbd7fe4cdf9d912db87a0d7a64'
                     }
