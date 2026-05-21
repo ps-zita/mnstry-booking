@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function apiFetch(endpoint, options = {}) {
             const headers = {
                 'Content-Type': 'application/json',
-                'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9', // Temporary hardcoded API key for debugging
+                'X-API-Key': 'mk_5a4ad5cbd7fe4cdf9d912db87a0d7a64', 
                 ...options.headers
             };
             // Directly call the Modulynk API instead of the proxy
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Try to find existing client by phone number using direct fetch to handle 404 properly
         const clientResponse = await fetch(`https://api.modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
             headers: {
-                'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9' // Using same API key
+                'X-API-Key': 'mk_5a4ad5cbd7fe4cdf9d912db87a0d7a64' 
             }
         });
 
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9'
+                    'X-API-Key': 'mk_5a4ad5cbd7fe4cdf9d912db87a0d7a64'
                 },
                 body: JSON.stringify({ firstName, lastName, phone })
             });
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Try to fetch the client again
                 const finalResponse = await fetch(`https://api.modulynk.app/api/v1/clients?phone=${encodeURIComponent(phone)}`, {
                     headers: {
-                        'X-API-Key': '93d2c6d7-1d83-4849-82a0-6407337320a9'
+                        'X-API-Key': 'mk_5a4ad5cbd7fe4cdf9d912db87a0d7a64'
                     }
                 });
                 if (finalResponse.ok) {
