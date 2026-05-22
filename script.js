@@ -259,11 +259,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const startTime = new Date(selectedDateTime);
             const endTime = new Date(startTime.getTime() + selectedService.duration * 60000);
 
+            const servicePrice = selectedService.prices[selectedSize] || 0;
             const bookingData = {
                 serviceId: selectedService.id,
+                services: [{ id: selectedService.id, name: selectedService.title, price: servicePrice }],
+                serviceIds: [String(selectedService.id)],
+                serviceName: selectedService.title,
+                price: servicePrice,
                 startTime: startTime.toISOString(),
                 endTime: endTime.toISOString(),
-                status: 'requested',  // Set status to 'requested' for booking requests
+                status: 'requested',
                 clientId: client.id,
                 customFields: [{ title: "CAR MAKE/MODEL", value: car }]
             };
